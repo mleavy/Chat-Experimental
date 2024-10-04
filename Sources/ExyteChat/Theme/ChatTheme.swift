@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ChatThemeKey: EnvironmentKey {
-    static var defaultValue: ChatTheme = ChatTheme()
+    //mleavy
+    static var defaultValue: ChatTheme = ChatTheme.shared
 }
 
 extension EnvironmentValues {
@@ -20,7 +21,9 @@ extension EnvironmentValues {
 
 public extension View {
     func chatTheme(_ theme: ChatTheme) -> some View {
-        self.environment(\.chatTheme, theme)
+        //mleavy
+        ChatTheme.shared = theme
+        return self.environment(\.chatTheme, theme)
     }
 
     func chatTheme(colors: ChatTheme.Colors = .init(),
@@ -30,13 +33,21 @@ public extension View {
 }
 
 public struct ChatTheme {
+    
+    //mleavy
+    public static var shared = ChatTheme()
+    
     public let colors: ChatTheme.Colors
     public let images: ChatTheme.Images
+    //mleavy
+    public let extensions: ChatTheme.Extensions
 
     public init(colors: ChatTheme.Colors = .init(),
-                images: ChatTheme.Images = .init()) {
+                images: ChatTheme.Images = .init(),
+                extensions: ChatTheme.Extensions = .init()) {
         self.colors = colors
         self.images = images
+        self.extensions = extensions
     }
 
     public struct Colors {
@@ -310,6 +321,17 @@ public struct ChatTheme {
                 cancelReply: cancelReply ?? Image("cancelReply", bundle: .current),
                 replyToMessage: replyToMessage ?? Image("replyToMessage", bundle: .current)
             )
+        }
+    }
+    
+    //mleavy
+    public struct Extensions {
+        public var isKeyboardInteractive: Bool
+        
+        public init(
+            isKeyboardInteractive: Bool = false
+        ) {
+            self.isKeyboardInteractive = isKeyboardInteractive
         }
     }
 }

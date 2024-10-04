@@ -123,21 +123,27 @@ struct MessageView: View {
     @ViewBuilder
     func bubbleView(_ message: Message) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            if !message.attachments.isEmpty {
-                attachmentsView(message)
+            //mleavy: support for "typing" indicator sort of thing
+            if message.status == .sending && !message.user.isCurrentUser {
+                replyWaitingView()
             }
-
-            if !message.text.isEmpty {
-                textWithTimeView(message)
-                    .font(Font(font))
-            }
-
-            if let recording = message.recording {
-                VStack(alignment: .trailing, spacing: 8) {
-                    recordingView(recording)
-                    messageTimeView()
-                        .padding(.bottom, 8)
-                        .padding(.trailing, 12)
+            else {
+                if !message.attachments.isEmpty {
+                    attachmentsView(message)
+                }
+                
+                if !message.text.isEmpty {
+                    textWithTimeView(message)
+                        .font(Font(font))
+                }
+                
+                if let recording = message.recording {
+                    VStack(alignment: .trailing, spacing: 8) {
+                        recordingView(recording)
+                        messageTimeView()
+                            .padding(.bottom, 8)
+                            .padding(.trailing, 12)
+                    }
                 }
             }
         }

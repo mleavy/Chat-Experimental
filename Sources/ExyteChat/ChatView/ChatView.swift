@@ -79,6 +79,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     let sections: [MessagesSection]
     let ids: [String]
     let didSendMessage: (DraftMessage) -> Void
+    //mleavy
+    var didTapInteractiveLeadingButton: TappedInteractiveInputLeadingButtonClosure?
 
     // MARK: - View builders
 
@@ -158,6 +160,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
 
     public var body: some View {
         mainView
+            .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],
+                             edges: theme.extensions.isKeyboardInteractive ? .bottom : []) //mleavy
             .background(theme.colors.mainBackground)
             .environmentObject(keyboardState)
 
@@ -203,7 +207,11 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 if let builder = betweenListAndInputViewBuilder {
                     builder()
                 }
-                inputView
+                //mleavy - we don't want input view if interactive because
+                //UIList now has it's own (to support interactive keyboard dismissal)
+                if !theme.extensions.isKeyboardInteractive {
+                    inputView
+                }
             } else {
                 inputView
                 if let builder = betweenListAndInputViewBuilder {
@@ -212,6 +220,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 listWithButton
             }
         }
+        .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],
+                         edges: theme.extensions.isKeyboardInteractive ? .bottom : []) //mleavy
     }
 
     var waitingForNetwork: some View {
@@ -251,6 +261,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     .padding(8)
                 }
             }
+            .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],
+                             edges: theme.extensions.isKeyboardInteractive ? .bottom : []) //mleavy
 
         case .comments:
             list
@@ -279,49 +291,53 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                showMessageTimeView: showMessageTimeView,
                messageFont: messageFont,
                sections: sections,
-               ids: ids
+               ids: ids,
+               inputManager: CustomInputManager.get(inputViewModel: inputViewModel, theme: theme)
         )
+        .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],
+                         edges: theme.extensions.isKeyboardInteractive ? .bottom : []) //mleavy
         .applyIf(!isScrollEnabled) {
             $0.frame(height: tableContentHeight)
         }
         .onStatusBarTap {
             shouldScrollToTop()
         }
-        .transparentNonAnimatingFullScreenCover(item: $viewModel.messageMenuRow) {
-            if let row = viewModel.messageMenuRow {
-                ZStack(alignment: .topLeading) {
-                    theme.colors.messageMenuBackground
-                        .opacity(menuBgOpacity)
-                        .ignoresSafeArea(.all)
-
-                    if needsScrollView {
-                        ScrollView {
-                            messageMenu(row)
-                        }
-                        .introspect(.scrollView, on: .iOS(.v16, .v17, .v18)) { scrollView in
-                            DispatchQueue.main.async {
-                                self.menuScrollView = scrollView
-                            }
-                        }
-                        .opacity(readyToShowScrollView ? 1 : 0)
-                    }
-                    if !needsScrollView || !readyToShowScrollView {
-                        messageMenu(row)
-                            .position(menuCellPosition)
-                    }
-                }
-                .onAppear {
-                    DispatchQueue.main.async {
-                        if let frame = cellFrames[row.id] {
-                            showMessageMenu(frame)
-                        }
-                    }
-                }
-                .onTapGesture {
-                    hideMessageMenu()
-                }
-            }
-        }
+        // mleavy - no use case for this
+//        .transparentNonAnimatingFullScreenCover(item: $viewModel.messageMenuRow) {
+//            if let row = viewModel.messageMenuRow {
+//                ZStack(alignment: .topLeading) {
+//                    theme.colors.messageMenuBackground
+//                        .opacity(menuBgOpacity)
+//                        .ignoresSafeArea(.all)
+//
+//                    if needsScrollView {
+//                        ScrollView {
+//                            messageMenu(row)
+//                        }
+//                        .introspect(.scrollView, on: .iOS(.v16, .v17, .v18)) { scrollView in
+//                            DispatchQueue.main.async {
+//                                self.menuScrollView = scrollView
+//                            }
+//                        }
+//                        .opacity(readyToShowScrollView ? 1 : 0)
+//                    }
+//                    if !needsScrollView || !readyToShowScrollView {
+//                        messageMenu(row)
+//                            .position(menuCellPosition)
+//                    }
+//                }
+//                .onAppear {
+//                    DispatchQueue.main.async {
+//                        if let frame = cellFrames[row.id] {
+//                            showMessageMenu(frame)
+//                        }
+//                    }
+//                }
+//                .onTapGesture {
+//                    hideMessageMenu()
+//                }
+//            }
+//        }
         .onPreferenceChange(MessageMenuPreferenceKey.self) {
             self.cellFrames = $0
         }
@@ -340,6 +356,10 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                         NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
                     }
                 }
+            }
+            
+            inputViewModel.didTapLeadingButton = {
+                didTapInteractiveLeadingButton?()
             }
         }
     }
@@ -529,6 +549,19 @@ public extension ChatView {
     func enableLoadMore(pageSize: Int, _ handler: @escaping ChatPaginationClosure) -> ChatView {
         var view = self
         view.paginationHandler = PaginationHandler(handleClosure: handler, pageSize: pageSize)
+        return view
+    }
+    
+    func theme(theme: ChatTheme) -> ChatView {
+        let view = self
+        let _ = view.chatTheme(theme)
+        return view
+    }
+    
+    //mleavy
+    func interactiveLeadingButtonClosure(_ closure: @escaping TappedInteractiveInputLeadingButtonClosure) -> ChatView {
+        var view = self
+        view.didTapInteractiveLeadingButton = closure
         return view
     }
 

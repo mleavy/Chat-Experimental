@@ -6,6 +6,9 @@ import Foundation
 import Combine
 import ExyteMediaPicker
 
+//mleavy
+public typealias TappedInteractiveInputLeadingButtonClosure = () -> ()
+
 final class InputViewModel: ObservableObject {
 
     @Published var text = ""
@@ -19,6 +22,8 @@ final class InputViewModel: ObservableObject {
 
     var recordingPlayer: RecordingPlayer?
     var didSendMessage: ((DraftMessage) -> Void)?
+    //mleavy
+    var didTapLeadingButton: TappedInteractiveInputLeadingButtonClosure?
 
     private var recorder = Recorder()
 
@@ -67,6 +72,11 @@ final class InputViewModel: ObservableObject {
         { [weak self] in
             self?.inputViewActionInternal($0)
         }
+    }
+    
+    //mleavy
+    func leadingButtonTapped() {
+        didTapLeadingButton?()
     }
     
     private func inputViewActionInternal(_ action: InputViewAction) {

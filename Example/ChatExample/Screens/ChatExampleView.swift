@@ -18,17 +18,29 @@ struct ChatExampleView: View {
     init(viewModel: ChatExampleViewModel = ChatExampleViewModel(), title: String) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.title = title
+        
+        //mleavy
+        let colors = ChatTheme.Colors(inputLightContextBackground: .green)
+        let extensions = ChatTheme.Extensions(isKeyboardInteractive: true)
+        theme = ChatTheme(colors: colors, extensions: extensions)
     }
+    
+    var theme = ChatTheme()
     
     var body: some View {
         ChatView(messages: viewModel.messages, chatType: .conversation) { draft in
             viewModel.send(draft: draft)
         }
+        //mleavy
+        .theme(theme: theme)
         .enableLoadMore(pageSize: 3) { message in
             viewModel.loadMoreMessage(before: message)
         }
         .messageUseMarkdown(messageUseMarkdown: true)
         .setRecorderSettings(recorderSettings)
+        .interactiveLeadingButtonClosure {
+            print("beep")
+        }
         .navigationBarBackButtonHidden()
         .toolbar{
             ToolbarItem(placement: .navigationBarLeading) {

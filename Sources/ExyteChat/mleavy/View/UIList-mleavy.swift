@@ -1,18 +1,20 @@
 //
+//  UIList-mleavy.swift
+//  Chat
+//
+//  Created by Mike Leavy on 10/3/24.
+//
+
+//
 //  UIList.swift
-//  
+//
 //
 //  Created by Alisa Mylnikova on 24.02.2023.
 //
 
 import SwiftUI
 
-public extension Notification.Name {
-    static let onScrollToBottom = Notification.Name("onScrollToBottom")
-}
-
-//mleavy: renamed, there is a new UIList in mleavy folder
-struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
+struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
 
     typealias MessageBuilderClosure = ChatView<MessageContent, InputView, DefaultMessageMenuAction>.MessageBuilderClosure
 
@@ -42,6 +44,8 @@ struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
     let messageFont: UIFont
     let sections: [MessagesSection]
     let ids: [String]
+    
+    let inputManager: CustomInputManager
 
     @State private var isScrolledToTop = false
 
@@ -51,7 +55,9 @@ struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIView {
         let tableView = UITableView(frame: .zero, style: .grouped)
-        //tableView.translatesAutoresizingMaskIntoConstraints = false
+        if !theme.extensions.isKeyboardInteractive {
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+        }
         tableView.separatorStyle = .none
         tableView.dataSource = context.coordinator
         tableView.delegate = context.coordinator
@@ -65,7 +71,7 @@ struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
         tableView.scrollsToTop = false
         tableView.isScrollEnabled = isScrollEnabled
         //mleavy: dismiss the keyboard on any chat view scroll
-        tableView.keyboardDismissMode = .interactive
+        tableView.keyboardDismissMode = theme.extensions.isKeyboardInteractive ? .interactive : .onDrag
 
         NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
             DispatchQueue.main.async {
@@ -81,54 +87,64 @@ struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
             }
         }
         
-        //mleavy
-        let view = UIView(frame: .zero)
-        let internalView = UIView(frame: .zero)
-        
-        internalView.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let textField = UITextField(frame: .zero)
-        internalView.addSubview(textField)
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(internalView)
-        internalView.translatesAutoresizingMaskIntoConstraints = false
-        
-        tableView.tag = 777
-        internalView.tag = 747
-        
-        view.keyboardLayoutGuide.followsUndockedKeyboard = true
-        
-        NSLayoutConstraint.activate([
-            internalView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            internalView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            internalView.topAnchor.constraint(equalTo: view.topAnchor),
-        ])
-        
-        NSLayoutConstraint.activate([
-            textField.leadingAnchor.constraint(equalTo: internalView.leadingAnchor),
-            textField.trailingAnchor.constraint(equalTo: internalView.trailingAnchor),
-            textField.bottomAnchor.constraint(equalTo: internalView.bottomAnchor),
-            textField.heightAnchor.constraint(equalToConstant: 44)
-        ])
-        
-        NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: internalView.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: internalView.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: internalView.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: textField.topAnchor)
-        ])
-        
-        let textFieldOnKeyboard = view.keyboardLayoutGuide.topAnchor.constraint(equalTo: internalView.bottomAnchor, constant: 0)
-        view.keyboardLayoutGuide.setConstraints([textFieldOnKeyboard], activeWhenAwayFrom: .top)
-        
-        return view
+        if theme.extensions.isKeyboardInteractive {
+            let view = UIView(frame: .zero)
+            let internalView = UIView(frame: .zero)
+            
+            internalView.addSubview(tableView)
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+            
+            let inputContainer = inputManager.inputView
+            internalView.addSubview(inputContainer)
+            inputContainer.translatesAutoresizingMaskIntoConstraints = false
+            
+            view.addSubview(internalView)
+            internalView.translatesAutoresizingMaskIntoConstraints = false
+            
+            tableView.tag = 777
+            internalView.tag = 747
+            
+            view.keyboardLayoutGuide.followsUndockedKeyboard = true
+            
+            NSLayoutConstraint.activate([
+                internalView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                internalView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                internalView.topAnchor.constraint(equalTo: view.topAnchor),
+            ])
+            
+            NSLayoutConstraint.activate([
+                inputContainer.leadingAnchor.constraint(equalTo: internalView.leadingAnchor, constant: 8),
+                inputContainer.trailingAnchor.constraint(equalTo: internalView.trailingAnchor, constant: -8),
+                inputContainer.bottomAnchor.constraint(equalTo: internalView.bottomAnchor, constant: -10),
+                inputContainer.heightAnchor.constraint(equalToConstant: 44)
+            ])
+            
+            NSLayoutConstraint.activate([
+                tableView.leadingAnchor.constraint(equalTo: internalView.leadingAnchor),
+                tableView.trailingAnchor.constraint(equalTo: internalView.trailingAnchor),
+                tableView.topAnchor.constraint(equalTo: internalView.topAnchor),
+                tableView.bottomAnchor.constraint(equalTo: inputContainer.topAnchor, constant: -10)
+            ])
+            
+            let textFieldOnKeyboard = view.keyboardLayoutGuide.topAnchor.constraint(equalTo: internalView.bottomAnchor, constant: 0)
+            view.keyboardLayoutGuide.setConstraints([textFieldOnKeyboard], activeWhenAwayFrom: .top)
+            
+            return view
+        }
+        else {
+            return tableView
+        }
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
                 
-        let tableView = (uiView.viewWithTag(747))!.viewWithTag(777) as! UITableView
+        let tableView: UITableView!
+        if theme.extensions.isKeyboardInteractive {
+            tableView = ((uiView.viewWithTag(747))!.viewWithTag(777) as! UITableView)
+        }
+        else {
+            tableView = (uiView as! UITableView)
+        }
                 
         if !isScrollEnabled {
             DispatchQueue.main.async {
@@ -475,7 +491,6 @@ struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
         var paginationTargetIndexPath: IndexPath?
 
         func numberOfSections(in tableView: UITableView) -> Int {
-            print("frame = \(tableView.frame)")
             return sections.count
         }
 
@@ -613,3 +628,4 @@ struct UIListx<MessageContent: View, InputView: View>: UIViewRepresentable {
         return res
     }
 }
+

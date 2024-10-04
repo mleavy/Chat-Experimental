@@ -26,7 +26,9 @@ struct ChatMessageView<MessageContent: View>: View {
 
     var body: some View {
         Group {
-            if let messageBuilder = messageBuilder {
+            //mleavy: conditionally use messageBuilder
+            if row.message.usesMessageBuilder,
+               let messageBuilder = messageBuilder {
                 messageBuilder(
                     row.message,
                     row.positionInUserGroup,

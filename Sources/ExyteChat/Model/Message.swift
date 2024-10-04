@@ -48,6 +48,8 @@ public struct Message: Identifiable, Hashable {
     public var user: User
     public var status: Status?
     public var createdAt: Date
+    //mleavy: conditionally use messageBuilder
+    public var usesMessageBuilder: Bool
 
     public var text: String
     public var attachments: [Attachment]
@@ -60,6 +62,7 @@ public struct Message: Identifiable, Hashable {
                 user: User,
                 status: Status? = nil,
                 createdAt: Date = Date(),
+                usesMessageBuilder: Bool = true, //mleavy: conditionally use messageBuilder
                 text: String = "",
                 attachments: [Attachment] = [],
                 recording: Recording? = nil,
@@ -69,6 +72,7 @@ public struct Message: Identifiable, Hashable {
         self.user = user
         self.status = status
         self.createdAt = createdAt
+        self.usesMessageBuilder = usesMessageBuilder //mleavy: conditionally use messageBuilder
         self.text = text
         self.attachments = attachments
         self.recording = recording

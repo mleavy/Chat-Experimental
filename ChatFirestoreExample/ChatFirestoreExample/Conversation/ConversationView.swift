@@ -18,6 +18,7 @@ struct ConversationView: View {
         ChatView(messages: viewModel.messages) { draft in
             viewModel.sendMessage(draft)
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom) //mleavy
         .orientationHandler { mode in
             switch mode {
             case .lock: AppDelegate.lockOrientationToPortrait()
