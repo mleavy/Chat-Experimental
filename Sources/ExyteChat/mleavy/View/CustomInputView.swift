@@ -41,19 +41,25 @@ class CustomInputManager: NSObject, UITextViewDelegate {
     
     private var defaultInputHeight: CGFloat = .zero
     
-    static func get(inputViewModel: InputViewModel, theme: ChatTheme) -> CustomInputManager {
+    static func get(inputViewModel: InputViewModel,
+                    font: UIFont,
+                    theme: ChatTheme) -> CustomInputManager {
         if let shared { return shared }
-        shared = CustomInputManager(inputViewModel: inputViewModel, theme: theme)
+        shared = CustomInputManager(inputViewModel: inputViewModel,
+                                    font: font,
+                                    theme: theme)
         return shared!
     }
     
-    private init(inputViewModel: InputViewModel, theme: ChatTheme) {
+    private init(inputViewModel: InputViewModel,
+                 font: UIFont,
+                 theme: ChatTheme) {
         self.inputViewModel = inputViewModel
         self.inputView = CustomInputView.get()
         super.init()
         self.inputView.textView.delegate = self
         bind()
-        apply(theme)
+        apply(theme, font: font)
         updateSendButtonState()
     }
     
@@ -62,12 +68,15 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         inputView.leadingButton.addTarget(self, action: #selector(self.leadingButtonTapped), for: .touchUpInside)
     }
     
-    private func apply(_ theme: ChatTheme) {
+    private func apply(_ theme: ChatTheme, font: UIFont) {
         self.inputView.containerView.backgroundColor = UIColor(theme.colors.inputLightContextBackground)
         
-        let image: UIImage? = theme.images.inputView.arrowSend.render(scale: UIScreen.main.scale)
-        self.inputView.leadingButton.setImage(image, for: .normal)
-        self.inputView.sendButton.setImage(image, for: .normal)
+        let sendImage: UIImage? = theme.images.inputView.arrowSend.render(scale: UIScreen.main.scale)
+        let leadingImage: UIImage? = theme.extensions.leadingButtonImage.render(scale: UIScreen.main.scale)
+        
+        self.inputView.leadingButton.setImage(leadingImage, for: .normal)
+        self.inputView.sendButton.setImage(sendImage, for: .normal)
+        self.inputView.textView.font = font
     }
     
     func textViewDidChange(_ textView: UITextView) {

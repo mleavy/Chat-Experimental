@@ -327,11 +327,14 @@ public struct ChatTheme {
     //mleavy
     public struct Extensions {
         public var isKeyboardInteractive: Bool
+        public var leadingButtonImage: Image
         
         public init(
-            isKeyboardInteractive: Bool = false
+            isKeyboardInteractive: Bool = false,
+            leadingButtonImage: Image? = nil
         ) {
             self.isKeyboardInteractive = isKeyboardInteractive
+            self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
         }
     }
 }

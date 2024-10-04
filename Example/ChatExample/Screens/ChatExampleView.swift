@@ -41,6 +41,7 @@ struct ChatExampleView: View {
         .interactiveLeadingButtonClosure {
             print("beep")
         }
+        .setMessageFont(UIFont.systemFont(ofSize: 22))
         .navigationBarBackButtonHidden()
         .toolbar{
             ToolbarItem(placement: .navigationBarLeading) {

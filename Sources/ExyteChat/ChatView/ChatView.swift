@@ -292,7 +292,9 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                messageFont: messageFont,
                sections: sections,
                ids: ids,
-               inputManager: CustomInputManager.get(inputViewModel: inputViewModel, theme: theme)
+               inputManager: CustomInputManager.get(inputViewModel: inputViewModel,
+                                                    font: messageFont,
+                                                    theme: theme)
         )
         .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],
                          edges: theme.extensions.isKeyboardInteractive ? .bottom : []) //mleavy
