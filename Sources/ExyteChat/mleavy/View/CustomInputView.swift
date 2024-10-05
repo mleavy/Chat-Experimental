@@ -156,9 +156,8 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         
         let size = CGSize(width: textView.frame.size.width, height: .infinity)
         let estimatedSize = textView.sizeThatFits(size)
-        let newHeight = max(estimatedSize.height, defaultInputHeight) +
-                        theme.extensions.textViewPadding.top +
-                        theme.extensions.textViewPadding.bottom
+        let textViewPadding = theme.extensions.textViewPadding.top + theme.extensions.textViewPadding.bottom
+        let newHeight = max(estimatedSize.height + textViewPadding, defaultInputHeight)
         
         guard textView.contentSize.height < 100.0 else {
             textView.isScrollEnabled = true

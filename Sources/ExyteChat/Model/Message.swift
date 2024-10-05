@@ -76,8 +76,9 @@ public class Message: Identifiable, ObservableObject {
         self.isTyping = true
     }
     
-    public func stopTyping(_ text: String) {
-        self.text = text
+    public func stopTyping(with responseMessage: Message) {
+        self.text = responseMessage.text
+        self.createdAt = responseMessage.createdAt
         self.isTyping = false
     }
 
