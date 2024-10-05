@@ -71,10 +71,10 @@ class CustomInputView: UIView {
         containerView.addSubview(textView)
         
         NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: leadingButton.trailingAnchor, constant: theme.extensions.buttonToTextViewPadding),
-            textView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -theme.extensions.buttonToTextViewPadding),
-            textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            textView.topAnchor.constraint(equalTo: containerView.topAnchor)
+            textView.leadingAnchor.constraint(equalTo: leadingButton.trailingAnchor, constant: theme.extensions.textViewPadding.leading),
+            textView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -theme.extensions.textViewPadding.trailing),
+            textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -theme.extensions.textViewPadding.bottom),
+            textView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: theme.extensions.textViewPadding.top)
         ])
         
         textView.font = font
@@ -100,6 +100,8 @@ class CustomInputManager: NSObject, UITextViewDelegate {
     
     private var defaultInputHeight: CGFloat = .zero
     
+    private var theme: ChatTheme
+    
     static func get(inputViewModel: InputViewModel,
                     font: UIFont,
                     theme: ChatTheme) -> CustomInputManager {
@@ -113,6 +115,7 @@ class CustomInputManager: NSObject, UITextViewDelegate {
     private init(inputViewModel: InputViewModel,
                  font: UIFont,
                  theme: ChatTheme) {
+        self.theme = theme
         self.inputViewModel = inputViewModel
         self.inputView = CustomInputView(frame: .zero, font: font, theme: theme)
         super.init()
@@ -131,7 +134,7 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         updateSendButtonState()
         
         if defaultInputHeight == .zero {
-            textView.superview!.superview!.constraints.forEach { (constraint) in
+            inputView.constraints.forEach { (constraint) in
                 if constraint.firstAttribute == .height {
                     defaultInputHeight = constraint.constant
                 }
@@ -140,7 +143,9 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         
         let size = CGSize(width: textView.frame.size.width, height: .infinity)
         let estimatedSize = textView.sizeThatFits(size)
-        let newHeight = max(estimatedSize.height, defaultInputHeight)
+        let newHeight = max(estimatedSize.height, defaultInputHeight) +
+                        theme.extensions.textViewPadding.top +
+                        theme.extensions.textViewPadding.bottom
         
         guard textView.contentSize.height < 100.0 else {
             textView.isScrollEnabled = true
@@ -149,7 +154,7 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         
         textView.isScrollEnabled = false
         
-        textView.superview!.superview!.constraints.forEach { (constraint) in
+        inputView.constraints.forEach { (constraint) in
             if constraint.firstAttribute == .height {
                 constraint.constant = newHeight
             }

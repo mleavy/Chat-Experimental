@@ -330,7 +330,7 @@ public struct ChatTheme {
         public var leadingButtonImage: Image
         public var buttonSize: CGSize
         public var buttonToFramePadding: CGFloat
-        public var buttonToTextViewPadding: CGFloat
+        public var textViewPadding: EdgeInsets
         public var inputViewPadding: EdgeInsets
         public var inputViewDefaultHeight: CGFloat
         public var inputViewPlaceholderText: String?
@@ -346,8 +346,8 @@ public struct ChatTheme {
             isKeyboardInteractive: Bool = false,
             leadingButtonImage: Image? = nil,
             buttonSize: CGSize = .init(width: 28, height: 28),
-            buttonToFramePadding : CGFloat = 8,
-            buttonToTextViewPadding: CGFloat = 7,
+            buttonToFramePadding: CGFloat = 8,
+            textViewPadding: EdgeInsets = .init(top: 0, leading: 7, bottom: 0, trailing: 7),
             inputViewPadding: EdgeInsets = .init(top: 10, leading: 8, bottom: 10, trailing: 8),
             inputViewDefaultHeight: CGFloat = 44,
             inputViewPlaceholderText: String? = nil,
@@ -374,7 +374,7 @@ public struct ChatTheme {
             self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
             self.buttonSize = buttonSize
             self.buttonToFramePadding = buttonToFramePadding
-            self.buttonToTextViewPadding = buttonToTextViewPadding
+            self.textViewPadding = textViewPadding
             self.inputViewPadding = inputViewPadding
             self.inputViewDefaultHeight = inputViewDefaultHeight
             self.inputViewPlaceholderText = inputViewPlaceholderText

@@ -23,6 +23,7 @@ struct ChatExampleView: View {
         let colors = ChatTheme.Colors(inputLightContextBackground: .green)
         let extensions = ChatTheme.Extensions(
             isKeyboardInteractive: true,
+            textViewPadding: .init(top: 10, leading: 10, bottom: 0, trailing: 10),
             inputViewPlaceholderText: "Type at me!",
             hidesScrollToBottomButton: true,
             myMessageCornerRadii: .init(topLeading: 12,
