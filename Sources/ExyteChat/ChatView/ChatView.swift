@@ -250,15 +250,17 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             ZStack(alignment: .bottomTrailing) {
                 list
 
-                if !isScrolledToBottom {
-                    Button {
-                        NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
-                    } label: {
-                        theme.images.scrollToBottom
-                            .frame(width: 40, height: 40)
-                            .circleBackground(theme.colors.friendMessage)
+                if !theme.extensions.hidesScrollToBottomButton {
+                    if !isScrolledToBottom {
+                        Button {
+                            NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+                        } label: {
+                            theme.images.scrollToBottom
+                                .frame(width: 40, height: 40)
+                                .circleBackground(theme.colors.friendMessage)
+                        }
+                        .padding(8)
                     }
-                    .padding(8)
                 }
             }
             .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],

@@ -113,17 +113,17 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             ])
             
             NSLayoutConstraint.activate([
-                inputContainer.leadingAnchor.constraint(equalTo: internalView.leadingAnchor, constant: 8),
-                inputContainer.trailingAnchor.constraint(equalTo: internalView.trailingAnchor, constant: -8),
-                inputContainer.bottomAnchor.constraint(equalTo: internalView.bottomAnchor, constant: -10),
-                inputContainer.heightAnchor.constraint(equalToConstant: 44)
+                inputContainer.leadingAnchor.constraint(equalTo: internalView.leadingAnchor, constant: theme.extensions.inputViewPadding.leading),
+                inputContainer.trailingAnchor.constraint(equalTo: internalView.trailingAnchor, constant: -theme.extensions.inputViewPadding.trailing),
+                inputContainer.bottomAnchor.constraint(equalTo: internalView.bottomAnchor, constant: -theme.extensions.inputViewPadding.bottom),
+                inputContainer.heightAnchor.constraint(equalToConstant: theme.extensions.inputViewDefaultHeight)
             ])
             
             NSLayoutConstraint.activate([
                 tableView.leadingAnchor.constraint(equalTo: internalView.leadingAnchor),
                 tableView.trailingAnchor.constraint(equalTo: internalView.trailingAnchor),
                 tableView.topAnchor.constraint(equalTo: internalView.topAnchor),
-                tableView.bottomAnchor.constraint(equalTo: inputContainer.topAnchor, constant: -10)
+                tableView.bottomAnchor.constraint(equalTo: inputContainer.topAnchor, constant: -theme.extensions.inputViewPadding.top)
             ])
             
             let textFieldOnKeyboard = view.keyboardLayoutGuide.topAnchor.constraint(equalTo: internalView.bottomAnchor, constant: 0)

@@ -9,26 +9,85 @@ import UIKit
 import SwiftUI
 
 class CustomInputView: UIView {
-
-    @IBOutlet weak var containerView: UIView!
     
-    @IBOutlet weak var textView: UITextView!
+    var containerView: UIView!
+    var textView: UITextView!
+    var leadingButton: UIButton!
+    var sendButton: UIButton!
     
-    @IBOutlet weak var leadingButton: UIButton!
-    
-    @IBOutlet weak var sendButton: UIButton!
-    
-    
-    static func get() -> CustomInputView {
-        let nib = UINib(nibName: "CustomInputView", bundle: Bundle.module)
-        let view = nib.instantiate(withOwner: self).first as! CustomInputView
-        return view
+    init(frame: CGRect,
+         font: UIFont,
+         theme: ChatTheme) {
+        super.init(frame: frame)
+        setup(theme, font: font)
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setup(_ theme: ChatTheme, font: UIFont) {
         
-        containerView.layer.cornerRadius = 22
+        containerView = UIView(frame: .zero)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(containerView)
+        
+        NSLayoutConstraint.activate([
+            containerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            containerView.topAnchor.constraint(equalTo: self.topAnchor)
+        ])
+        
+        
+        leadingButton = UIButton(frame: .zero)
+        leadingButton.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(leadingButton)
+        
+        let buttonBottomConstraint = -(floor((theme.extensions.inputViewDefaultHeight / 2) - (theme.extensions.buttonSize.height / 2)))
+        
+        NSLayoutConstraint.activate([
+            leadingButton.heightAnchor.constraint(equalToConstant: theme.extensions.buttonSize.height),
+            leadingButton.widthAnchor.constraint(equalToConstant: .init(theme.extensions.buttonSize.width)),
+            leadingButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: theme.extensions.buttonToFramePadding),
+            leadingButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: buttonBottomConstraint)
+        ])
+        
+        
+        sendButton = UIButton(frame: .zero)
+        sendButton.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(sendButton)
+        
+        NSLayoutConstraint.activate([
+            sendButton.heightAnchor.constraint(equalToConstant: theme.extensions.buttonSize.height),
+            sendButton.widthAnchor.constraint(equalToConstant: .init(theme.extensions.buttonSize.width)),
+            sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -theme.extensions.buttonToFramePadding),
+            sendButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: buttonBottomConstraint)
+        ])
+        
+        
+        textView = PlaceholderTextView(frame: .zero, theme: theme)
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(textView)
+        
+        NSLayoutConstraint.activate([
+            textView.leadingAnchor.constraint(equalTo: leadingButton.trailingAnchor, constant: theme.extensions.buttonToTextViewPadding),
+            textView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -theme.extensions.buttonToTextViewPadding),
+            textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            textView.topAnchor.constraint(equalTo: containerView.topAnchor)
+        ])
+        
+        textView.font = font
+        textView.backgroundColor = UIColor(theme.colors.inputLightContextBackground)
+        
+        let sendImage: UIImage? = theme.images.inputView.arrowSend.render(scale: UIScreen.main.scale)
+        let leadingImage: UIImage? = theme.extensions.leadingButtonImage.render(scale: UIScreen.main.scale)
+        
+        leadingButton.setImage(leadingImage, for: .normal)
+        sendButton.setImage(sendImage, for: .normal)
+        
+        containerView.backgroundColor = UIColor(theme.colors.inputLightContextBackground)
+        containerView.layer.cornerRadius = theme.extensions.inputViewDefaultHeight / 2
     }
 }
 
@@ -55,11 +114,10 @@ class CustomInputManager: NSObject, UITextViewDelegate {
                  font: UIFont,
                  theme: ChatTheme) {
         self.inputViewModel = inputViewModel
-        self.inputView = CustomInputView.get()
+        self.inputView = CustomInputView(frame: .zero, font: font, theme: theme)
         super.init()
         self.inputView.textView.delegate = self
         bind()
-        apply(theme, font: font)
         updateSendButtonState()
     }
     
@@ -67,18 +125,7 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         inputView.sendButton.addTarget(self, action: #selector(self.sendButtonTapped), for: .touchUpInside)
         inputView.leadingButton.addTarget(self, action: #selector(self.leadingButtonTapped), for: .touchUpInside)
     }
-    
-    private func apply(_ theme: ChatTheme, font: UIFont) {
-        self.inputView.containerView.backgroundColor = UIColor(theme.colors.inputLightContextBackground)
         
-        let sendImage: UIImage? = theme.images.inputView.arrowSend.render(scale: UIScreen.main.scale)
-        let leadingImage: UIImage? = theme.extensions.leadingButtonImage.render(scale: UIScreen.main.scale)
-        
-        self.inputView.leadingButton.setImage(leadingImage, for: .normal)
-        self.inputView.sendButton.setImage(sendImage, for: .normal)
-        self.inputView.textView.font = font
-    }
-    
     func textViewDidChange(_ textView: UITextView) {
         
         updateSendButtonState()

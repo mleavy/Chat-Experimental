@@ -284,19 +284,39 @@ extension View {
 
     @ViewBuilder
     func bubbleBackground(_ message: Message, theme: ChatTheme, isReply: Bool = false) -> some View {
-        let radius: CGFloat = !message.attachments.isEmpty ? 12 : 20
+        //mleavy
+        //let radius: CGFloat = !message.attachments.isEmpty ? 12 : 20
+        let cornerRadii = message.attachments.isEmpty ?
+            (message.user.isCurrentUser ?
+             theme.extensions.myMessageCornerRadii : theme.extensions.friendMessageCornerRadii) :
+            (message.user.isCurrentUser ?
+             theme.extensions.myAttachmentMessageCornerRadii : theme.extensions.friendAttachmentMessageCornerRadii)
+        
+        
+        
         let additionalMediaInset: CGFloat = message.attachments.count > 1 ? 2 : 0
         self
             .frame(width: message.attachments.isEmpty ? nil : MessageView.widthWithMedia + additionalMediaInset)
             .foregroundColor(message.user.isCurrentUser ? theme.colors.textDarkContext : theme.colors.textLightContext)
             .background {
                 if isReply || !message.text.isEmpty || message.recording != nil {
-                    RoundedRectangle(cornerRadius: radius)
+                    //mleavy
+                    //RoundedRectangle(cornerRadius: radius)
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .foregroundColor(message.user.isCurrentUser ? theme.colors.myMessage : theme.colors.friendMessage)
                         .opacity(isReply ? 0.5 : 1)
                 }
             }
-            .cornerRadius(radius)
+            //mleavy
+            //.cornerRadius(radius)
+            .clipShape(
+                .rect(
+                    topLeadingRadius: cornerRadii.topLeading,
+                    bottomLeadingRadius: cornerRadii.bottomLeading,
+                    bottomTrailingRadius: cornerRadii.bottomTrailing,
+                    topTrailingRadius: cornerRadii.topTrailing
+                )
+            )
     }
 }
 

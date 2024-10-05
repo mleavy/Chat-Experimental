@@ -21,7 +21,20 @@ struct ChatExampleView: View {
         
         //mleavy
         let colors = ChatTheme.Colors(inputLightContextBackground: .green)
-        let extensions = ChatTheme.Extensions(isKeyboardInteractive: true)
+        let extensions = ChatTheme.Extensions(
+            isKeyboardInteractive: true,
+            inputViewPlaceholderText: "Type at me!",
+            hidesScrollToBottomButton: true,
+            myMessageCornerRadii: .init(topLeading: 12,
+                                        bottomLeading: 12,
+                                        bottomTrailing: 2,
+                                        topTrailing: 12),
+            friendMessageCornerRadii: .init(topLeading: 2,
+                                        bottomLeading: 12,
+                                        bottomTrailing: 12,
+                                        topTrailing: 12)
+        )
+        
         theme = ChatTheme(colors: colors, extensions: extensions)
     }
     
@@ -36,6 +49,7 @@ struct ChatExampleView: View {
         .enableLoadMore(pageSize: 3) { message in
             viewModel.loadMoreMessage(before: message)
         }
+        .showMessageTimeView(false)
         .messageUseMarkdown(messageUseMarkdown: true)
         .setRecorderSettings(recorderSettings)
         .interactiveLeadingButtonClosure {

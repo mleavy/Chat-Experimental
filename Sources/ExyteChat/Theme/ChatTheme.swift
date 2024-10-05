@@ -328,13 +328,63 @@ public struct ChatTheme {
     public struct Extensions {
         public var isKeyboardInteractive: Bool
         public var leadingButtonImage: Image
+        public var buttonSize: CGSize
+        public var buttonToFramePadding: CGFloat
+        public var buttonToTextViewPadding: CGFloat
+        public var inputViewPadding: EdgeInsets
+        public var inputViewDefaultHeight: CGFloat
+        public var inputViewPlaceholderText: String?
+        public var inputViewPlaceholderTextColor: Color
+        public var hidesScrollToBottomButton: Bool
+        
+        public var myMessageCornerRadii: RectangleCornerRadii
+        public var friendMessageCornerRadii: RectangleCornerRadii
+        public var myAttachmentMessageCornerRadii: RectangleCornerRadii
+        public var friendAttachmentMessageCornerRadii: RectangleCornerRadii
         
         public init(
             isKeyboardInteractive: Bool = false,
-            leadingButtonImage: Image? = nil
+            leadingButtonImage: Image? = nil,
+            buttonSize: CGSize = .init(width: 28, height: 28),
+            buttonToFramePadding : CGFloat = 8,
+            buttonToTextViewPadding: CGFloat = 7,
+            inputViewPadding: EdgeInsets = .init(top: 10, leading: 8, bottom: 10, trailing: 8),
+            inputViewDefaultHeight: CGFloat = 44,
+            inputViewPlaceholderText: String? = nil,
+            inputViewPlaceholderTextColor: Color = .gray,
+            hidesScrollToBottomButton: Bool = false,
+            myMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 20,
+                                                              bottomLeading: 20,
+                                                              bottomTrailing: 20,
+                                                              topTrailing: 20),
+            friendMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 20,
+                                                                  bottomLeading: 20,
+                                                                  bottomTrailing: 20,
+                                                                  topTrailing: 20),
+            myAttachmentMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 12,
+                                                                      bottomLeading: 12,
+                                                                      bottomTrailing: 12,
+                                                                      topTrailing: 12),
+            friendAttachmentMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 12,
+                                                                      bottomLeading: 12,
+                                                                      bottomTrailing: 12,
+                                                                      topTrailing: 12)
         ) {
             self.isKeyboardInteractive = isKeyboardInteractive
             self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
+            self.buttonSize = buttonSize
+            self.buttonToFramePadding = buttonToFramePadding
+            self.buttonToTextViewPadding = buttonToTextViewPadding
+            self.inputViewPadding = inputViewPadding
+            self.inputViewDefaultHeight = inputViewDefaultHeight
+            self.inputViewPlaceholderText = inputViewPlaceholderText
+            self.inputViewPlaceholderTextColor = inputViewPlaceholderTextColor
+            self.hidesScrollToBottomButton = hidesScrollToBottomButton
+            
+            self.myMessageCornerRadii = myMessageCornerRadii
+            self.friendMessageCornerRadii = friendMessageCornerRadii
+            self.myAttachmentMessageCornerRadii = myAttachmentMessageCornerRadii
+            self.friendAttachmentMessageCornerRadii = friendAttachmentMessageCornerRadii
         }
     }
 }
