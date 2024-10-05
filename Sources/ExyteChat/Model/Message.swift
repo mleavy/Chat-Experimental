@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-public struct Message: Identifiable, Hashable {
+//mleavy = made this a class, observable
+public class Message: Identifiable, ObservableObject {
 
     public enum Status: Equatable, Hashable {
         case sending
@@ -57,6 +58,28 @@ public struct Message: Identifiable, Hashable {
     public var replyMessage: ReplyMessage?
 
     public var triggerRedraw: UUID?
+    
+    //mleavy
+    @Published public var isTyping: Bool {
+        didSet {
+            if !isTyping {
+                print("stop typing")
+            }
+            else {
+                print("start typing")
+            }
+        }
+    }
+    public var typingText: String = "        "
+    
+    public func startTyping() {
+        self.isTyping = true
+    }
+    
+    public func stopTyping(_ text: String) {
+        self.text = text
+        self.isTyping = false
+    }
 
     public init(id: String,
                 user: User,
@@ -66,7 +89,8 @@ public struct Message: Identifiable, Hashable {
                 text: String = "",
                 attachments: [Attachment] = [],
                 recording: Recording? = nil,
-                replyMessage: ReplyMessage? = nil) {
+                replyMessage: ReplyMessage? = nil,
+                isTyping: Bool = false) {
 
         self.id = id
         self.user = user
@@ -77,6 +101,7 @@ public struct Message: Identifiable, Hashable {
         self.attachments = attachments
         self.recording = recording
         self.replyMessage = replyMessage
+        self.isTyping = isTyping
     }
 
     public static func makeMessage(
@@ -120,6 +145,13 @@ extension Message: Equatable {
         lhs.attachments == rhs.attachments &&
         lhs.recording == rhs.recording &&
         lhs.replyMessage == rhs.replyMessage
+    }
+}
+
+//mleavy - no longer auto-hashable
+extension Message: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 

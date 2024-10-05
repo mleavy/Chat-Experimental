@@ -13,7 +13,8 @@ struct MessageView: View {
 
     @ObservedObject var viewModel: ChatViewModel
 
-    let message: Message
+    //mleavy - we will observe typing changes
+    @StateObject var message: Message
     let positionInUserGroup: PositionInUserGroup
     let chatType: ChatType
     let avatarSize: CGFloat
@@ -219,38 +220,53 @@ struct MessageView: View {
         let messageView = MessageTextView(text: message.text, messageUseMarkdown: messageUseMarkdown)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, MessageView.horizontalTextPadding)
+        
+        //mleavy - and points below
+        let typingMessageView = MessageTextView(text: message.typingText, messageUseMarkdown: messageUseMarkdown)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, MessageView.horizontalTextPadding)
+        
+        let currentMessageView = message.isTyping ? typingMessageView : messageView
 
         let timeView = messageTimeView()
             .padding(.trailing, 12)
 
-        Group {
-            switch dateArrangement {
-            case .hstack:
-                HStack(alignment: .lastTextBaseline, spacing: 12) {
-                    messageView
-                    if !message.attachments.isEmpty {
-                        Spacer()
-                    }
-                    timeView
-                }
-                .padding(.vertical, 8)
-            case .vstack:
-                VStack(alignment: .leading, spacing: 4) {
-                    messageView
-                    HStack(spacing: 0) {
-                        Spacer()
+        ZStack {
+            Group {
+                //mleavy - typing
+                switch dateArrangement {
+                case .hstack:
+                    HStack(alignment: .lastTextBaseline, spacing: 12) {
+                        currentMessageView
+                        if !message.attachments.isEmpty {
+                            Spacer()
+                        }
                         timeView
                     }
-                }
-                .padding(.vertical, 8)
-            case .overlay:
-                messageView
                     .padding(.vertical, 8)
-                    .overlay(alignment: .bottomTrailing) {
-                        timeView
-                            .padding(.vertical, 8)
+                case .vstack:
+                    VStack(alignment: .leading, spacing: 4) {
+                        currentMessageView
+                        HStack(spacing: 0) {
+                            Spacer()
+                            timeView
+                        }
                     }
+                    .padding(.vertical, 8)
+                case .overlay:
+                    currentMessageView
+                        .padding(.vertical, 8)
+                        .overlay(alignment: .bottomTrailing) {
+                            timeView
+                                .padding(.vertical, 8)
+                        }
+                }
             }
+            
+            if message.isTyping {
+                MessageActivityView()
+            }
+            
         }
     }
 
