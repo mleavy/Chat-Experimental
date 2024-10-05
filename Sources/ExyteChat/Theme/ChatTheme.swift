@@ -342,6 +342,8 @@ public struct ChatTheme {
         public var myAttachmentMessageCornerRadii: RectangleCornerRadii
         public var friendAttachmentMessageCornerRadii: RectangleCornerRadii
         
+        public var sendButtonEnableClosure: (() -> Bool)?
+        
         public init(
             isKeyboardInteractive: Bool = false,
             leadingButtonImage: Image? = nil,
@@ -368,7 +370,8 @@ public struct ChatTheme {
             friendAttachmentMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 12,
                                                                       bottomLeading: 12,
                                                                       bottomTrailing: 12,
-                                                                      topTrailing: 12)
+                                                                      topTrailing: 12),
+            sendButtonEnableClosure: (() -> Bool)? = nil
         ) {
             self.isKeyboardInteractive = isKeyboardInteractive
             self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
@@ -385,6 +388,8 @@ public struct ChatTheme {
             self.friendMessageCornerRadii = friendMessageCornerRadii
             self.myAttachmentMessageCornerRadii = myAttachmentMessageCornerRadii
             self.friendAttachmentMessageCornerRadii = friendAttachmentMessageCornerRadii
+            
+            self.sendButtonEnableClosure = sendButtonEnableClosure
         }
     }
 }

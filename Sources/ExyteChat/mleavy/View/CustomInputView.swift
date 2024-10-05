@@ -8,6 +8,10 @@
 import UIKit
 import SwiftUI
 
+extension Notification.Name {
+    public static let updateSendButtonState = Notification.Name("com.squidstore.exyteChat.updateSendButtonState")
+}
+
 class CustomInputView: UIView {
     
     var containerView: UIView!
@@ -124,9 +128,18 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         updateSendButtonState()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     private func bind() {
         inputView.sendButton.addTarget(self, action: #selector(self.sendButtonTapped), for: .touchUpInside)
         inputView.leadingButton.addTarget(self, action: #selector(self.leadingButtonTapped), for: .touchUpInside)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateSendButtonState),
+                                               name: .updateSendButtonState,
+                                               object: nil)
     }
         
     func textViewDidChange(_ textView: UITextView) {
@@ -161,8 +174,9 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         }
     }
     
-    private func updateSendButtonState() {
-        inputView.sendButton.isEnabled = inputView.textView.text.count > 0
+    @objc private func updateSendButtonState() {
+        let callerEnabled = theme.extensions.sendButtonEnableClosure?() ?? true
+        inputView.sendButton.isEnabled = inputView.textView.text.count > 0 && callerEnabled
     }
         
     @objc private func sendButtonTapped() {

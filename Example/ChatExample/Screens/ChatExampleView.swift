@@ -33,7 +33,10 @@ struct ChatExampleView: View {
             friendMessageCornerRadii: .init(topLeading: 2,
                                         bottomLeading: 12,
                                         bottomTrailing: 12,
-                                        topTrailing: 12)
+                                        topTrailing: 12),
+            sendButtonEnableClosure: {
+                return true
+            }
         )
         
         theme = ChatTheme(colors: colors, extensions: extensions)
