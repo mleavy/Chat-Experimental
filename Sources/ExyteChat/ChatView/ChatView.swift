@@ -345,9 +345,11 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
         .onPreferenceChange(MessageMenuPreferenceKey.self) {
             self.cellFrames = $0
         }
-        .onTapGesture {
-            globalFocusState.focus = nil
-        }
+        //mleavy: this tap gesture is interfering with the input
+        //view buttons on iOS 17 and below; removing it
+//        .onTapGesture {
+//            globalFocusState.focus = nil
+//        }
         .onAppear {
             viewModel.didSendMessage = didSendMessage
             viewModel.inputViewModel = inputViewModel
