@@ -10,6 +10,7 @@ import SwiftUI
 
 extension Notification.Name {
     public static let updateSendButtonState = Notification.Name("com.squidstore.exyteChat.updateSendButtonState")
+    public static let updateLeadingButtonImage = Notification.Name("com.squidstore.exyteChat.updateLeadingButtonImage")
 }
 
 class CustomInputView: UIView {
@@ -140,6 +141,10 @@ class CustomInputManager: NSObject, UITextViewDelegate {
                                                selector: #selector(self.updateSendButtonState),
                                                name: .updateSendButtonState,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateLeadingButtonImage(_:)),
+                                               name: .updateLeadingButtonImage,
+                                               object: nil)
     }
         
     func textViewDidChange(_ textView: UITextView) {
@@ -176,6 +181,12 @@ class CustomInputManager: NSObject, UITextViewDelegate {
     @objc private func updateSendButtonState() {
         let callerEnabled = theme.extensions.sendButtonEnableClosure?() ?? true
         inputView.sendButton.isEnabled = inputView.textView.text.count > 0 && callerEnabled
+    }
+    
+    @objc private func updateLeadingButtonImage(_ notification: Notification) {
+        guard let image = notification.object as? Image else { return }
+        let leadingImage: UIImage? = image.render(scale: UIScreen.main.scale)
+        inputView.leadingButton.setImage(leadingImage, for: .normal)
     }
         
     @objc private func sendButtonTapped() {
