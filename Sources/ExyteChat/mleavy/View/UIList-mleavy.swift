@@ -73,6 +73,10 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         tableView.isScrollEnabled = isScrollEnabled
         //mleavy
         tableView.keyboardDismissMode = theme.extensions.isKeyboardInteractive ? .interactive : .onDrag
+        tableView.contentInset = .init(top: theme.extensions.conversaionViewInsets.top,
+                                       left: theme.extensions.conversaionViewInsets.leading,
+                                       bottom: theme.extensions.conversaionViewInsets.bottom,
+                                       right: theme.extensions.conversaionViewInsets.trailing)
 
         NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
             DispatchQueue.main.async {
@@ -582,7 +586,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     Text(sections[section].formattedDate)
                         .font(.system(size: 11))
                         .padding(10)
-                        .padding(.bottom, 8)
+                        .padding(.top, 10)
+                        .padding(.bottom, 0)
                         .foregroundColor(.gray)
                 }
             }

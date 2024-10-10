@@ -327,6 +327,7 @@ public struct ChatTheme {
     //mleavy
     public struct Extensions {
         public var isKeyboardInteractive: Bool
+        public var conversaionViewInsets: EdgeInsets
         public var leadingButtonImage: Image
         public var buttonSize: CGSize
         public var buttonToFramePadding: CGFloat
@@ -346,6 +347,7 @@ public struct ChatTheme {
         
         public init(
             isKeyboardInteractive: Bool = false,
+            conversaionViewInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0),
             leadingButtonImage: Image? = nil,
             buttonSize: CGSize = .init(width: 28, height: 28),
             buttonToFramePadding: CGFloat = 8,
@@ -374,6 +376,7 @@ public struct ChatTheme {
             sendButtonEnableClosure: (() -> Bool)? = nil
         ) {
             self.isKeyboardInteractive = isKeyboardInteractive
+            self.conversaionViewInsets = conversaionViewInsets
             self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
             self.buttonSize = buttonSize
             self.buttonToFramePadding = buttonToFramePadding
