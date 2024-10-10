@@ -28,7 +28,8 @@ extension ChatView {
     static func mapMessagesQuoteModeReplies(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let dates = Set(messages.map({ $0.createdAt.startOfDay() }))
             .sorted()
-            .reversed()
+            //mleavy - NO reverse when filling top to bottom
+            //.reversed()
         var result: [MessagesSection] = []
 
         for date in dates {
@@ -50,7 +51,8 @@ extension ChatView {
 
         let dates = Set(firstLevelMessages.map({ $0.createdAt.startOfDay() }))
             .sorted()
-            .reversed()
+            //mleavy - NO reverse when filling top to bottom
+            //.reversed()
         var result: [MessagesSection] = []
 
         for date in dates {
@@ -160,7 +162,8 @@ extension ChatView {
 
                 return MessageRow(message: $0.element, positionInUserGroup: position, commentsPosition: commentsPosition)
             }
-            .reversed()
+            //mleavy - NO reverse when filling top to bottom
+            //.reversed()
     }
 }
 

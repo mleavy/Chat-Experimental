@@ -62,7 +62,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         tableView.dataSource = context.coordinator
         tableView.delegate = context.coordinator
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        tableView.transform = CGAffineTransform(rotationAngle: (type == .conversation ? .pi : 0))
+        //mleavy: no transform when filling top to bottom
+        tableView.transform = CGAffineTransform(rotationAngle: (type == .conversation ? 0 : 0))
 
         tableView.showsVerticalScrollIndicator = false
         tableView.estimatedSectionHeaderHeight = 1
@@ -70,13 +71,19 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         tableView.backgroundColor = UIColor(theme.colors.mainBackground)
         tableView.scrollsToTop = false
         tableView.isScrollEnabled = isScrollEnabled
-        //mleavy: dismiss the keyboard on any chat view scroll
+        //mleavy
         tableView.keyboardDismissMode = theme.extensions.isKeyboardInteractive ? .interactive : .onDrag
 
         NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
             DispatchQueue.main.async {
                 if !context.coordinator.sections.isEmpty {
-                    tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+                    //mleavy - NO reverse when filling top to bottom
+                    //tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+                    tableView.scrollRectToVisible(.init(x: 0,
+                                                        y: tableView.contentSize.height - 1,
+                                                        width: tableView.frame.size.width,
+                                                        height: 1), animated: true)
+
                 }
             }
         }
@@ -256,18 +263,34 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     // apply the rest of the changes to table's dataSource, i.e. inserts
                     //print("5 apply inserts")
                     context.coordinator.sections = sections
+                    
+                    //mleavy: better updating, more consistent scroll-to-bottom behavior
+                    tableView.performUpdate {
+                        for operation in insertOperations {
+                            applyOperation(operation, tableView: tableView)
+                        }
+                    } completion: {
+                        if !isScrollEnabled {
+                            tableContentHeight = tableView.contentSize.height
+                        }
+                        
+                        tableView.performSelector(onMainThread: #selector(tableView.scrollToEnd), with: nil, waitUntilDone: true)
 
-                    tableView.beginUpdates()
-                    for operation in insertOperations {
-                        applyOperation(operation, tableView: tableView)
+                        updateSemaphore.signal()
                     }
-                    tableView.endUpdates()
 
-                    if !isScrollEnabled {
-                        tableContentHeight = tableView.contentSize.height
-                    }
 
-                    updateSemaphore.signal()
+//                    tableView.beginUpdates()
+//                    for operation in insertOperations {
+//                        applyOperation(operation, tableView: tableView)
+//                    }
+//                    tableView.endUpdates()
+//
+//                    if !isScrollEnabled {
+//                        tableContentHeight = tableView.contentSize.height
+//                    }
+//
+//                    updateSemaphore.signal()
                 }
             } else {
                 updateSemaphore.signal()
@@ -498,32 +521,30 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             sections[section].rows.count
         }
 
+        //mleavy - NO reverse when filling top to bottom
         func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-            if type == .comments {
-                return sectionHeaderView(section)
-            }
-            return nil
+            return sectionHeaderView(section)
         }
 
+        //mleavy - NO reverse when filling top to bottom
         func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-            if type == .conversation {
-                return sectionHeaderView(section)
-            }
             return nil
         }
 
+        //mleavy - NO reverse when filling top to bottom
         func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
             if !showDateHeaders && (section != 0 || mainHeaderBuilder == nil) {
                 return 0.1
             }
-            return type == .conversation ? 0.1 : UITableView.automaticDimension
+            return UITableView.automaticDimension
         }
 
+        //mleavy - NO reverse when filling top to bottom
         func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
             if !showDateHeaders && (section != 0 || mainHeaderBuilder == nil) {
                 return 0.1
             }
-            return type == .conversation ? UITableView.automaticDimension : 0.1
+            return 0.1
         }
 
         func sectionHeaderView(_ section: Int) -> UIView? {
@@ -531,9 +552,10 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 return nil
             }
 
+            //mleavy - NO rotation when filling top to bottom
             let header = UIHostingController(rootView:
                 sectionHeaderViewBuilder(section)
-                    .rotationEffect(Angle(degrees: (type == .conversation ? 180 : 0)))
+                    .rotationEffect(Angle(degrees: (type == .conversation ? 0 : 0)))
             ).view
             header?.backgroundColor = UIColor(chatTheme.colors.mainBackground)
             return header
@@ -577,7 +599,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 ChatMessageView(viewModel: viewModel, messageBuilder: messageBuilder, row: row, chatType: type, avatarSize: avatarSize, tapAvatarClosure: tapAvatarClosure, messageUseMarkdown: messageUseMarkdown, isDisplayingMessageMenu: false, showMessageTimeView: showMessageTimeView, messageFont: messageFont)
                     .transition(.scale)
                     .background(MessageMenuPreferenceViewSetter(id: row.id))
-                    .rotationEffect(Angle(degrees: (type == .conversation ? 180 : 0)))
+                    //mleavy - NO rotation when filling top to bottom
+                    .rotationEffect(Angle(degrees: (type == .conversation ? 0 : 0)))
                     .onTapGesture { }
                     .applyIf(showMessageMenuOnLongPress) {
                         $0.onLongPressGesture {
@@ -629,3 +652,32 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
     }
 }
 
+//mleavy - table view updating helpers
+extension UITableView {
+
+    /// Perform a series of method calls that insert, delete, or select rows and sections of the table view.
+    /// This is equivalent to a beginUpdates() / endUpdates() sequence,
+    /// with a completion closure when the animation is finished.
+    /// Parameter update: the update operation to perform on the tableView.
+    /// Parameter completion: the completion closure to be executed when the animation is completed.
+   
+    func performUpdate(_ update: () -> Void, completion: (()->Void)?) {
+    
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+
+        // Table View update on row / section
+        beginUpdates()
+        update()
+        endUpdates()
+    
+        CATransaction.commit()
+    }
+
+    @objc public func scrollToEnd() {
+        scrollRectToVisible(.init(x: 0,
+                            y: contentSize.height - 1,
+                            width: frame.size.width,
+                            height: 1), animated: true)
+    }
+}
