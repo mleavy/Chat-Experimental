@@ -197,27 +197,29 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     }
 
     var mainView: some View {
-        VStack {
+        ZStack {
+            VStack {
+                if isListAboveInputView {
+                    listWithButton
+                    if let builder = betweenListAndInputViewBuilder {
+                        builder()
+                    }
+                    //mleavy - we don't want input view if interactive because
+                    //UIList now has it's own (to support interactive keyboard dismissal)
+                    if !theme.extensions.isKeyboardInteractive {
+                        inputView
+                    }
+                } else {
+                    inputView
+                    if let builder = betweenListAndInputViewBuilder {
+                        builder()
+                    }
+                    listWithButton
+                }
+            }
+            
             if !networkMonitor.isConnected, !networkMonitor.isConnected {
                 waitingForNetwork
-            }
-
-            if isListAboveInputView {
-                listWithButton
-                if let builder = betweenListAndInputViewBuilder {
-                    builder()
-                }
-                //mleavy - we don't want input view if interactive because
-                //UIList now has it's own (to support interactive keyboard dismissal)
-                if !theme.extensions.isKeyboardInteractive {
-                    inputView
-                }
-            } else {
-                inputView
-                if let builder = betweenListAndInputViewBuilder {
-                    builder()
-                }
-                listWithButton
             }
         }
         .ignoresSafeArea(theme.extensions.isKeyboardInteractive ? .keyboard : [],
@@ -235,12 +237,14 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                             .font(.callout)
                             .foregroundColor(.white)
                             .padding()
-                            .background(.gray.opacity(0.75), in: Capsule())
+                            .background(.gray.opacity(0.9), in: Capsule())
                 
                 
                 Spacer()
             }
             .padding(.top, 50)
+            
+            Spacer()
         }
         .padding(.top, 8)
     }
