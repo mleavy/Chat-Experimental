@@ -231,14 +231,16 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 .frame(height: 1)
             HStack {
                 Spacer()
-                Image("waiting", bundle: .current)
-                Text("Waiting for network")
+                Label("Waiting for network", systemImage: "wifi.exclamationmark")
+                            .font(.callout)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(.gray.opacity(0.75), in: Capsule())
+                
+                
                 Spacer()
             }
-            .padding(.top, 6)
-            Rectangle()
-                .foregroundColor(.black.opacity(0.12))
-                .frame(height: 1)
+            .padding(.top, 50)
         }
         .padding(.top, 8)
     }
