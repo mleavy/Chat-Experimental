@@ -2,7 +2,7 @@
 //  Created by Alex.M on 20.06.2022.
 //
 
-import Foundation
+import UIKit
 import Combine
 
 final class ChatViewModel: ObservableObject {
@@ -50,6 +50,9 @@ final class ChatViewModel: ObservableObject {
             inputViewModel?.text = message.text
             inputViewModel?.edit(saveClosure)
             globalFocusState?.focus = .uuid(inputFieldId)
+        //mleavy
+        case .copy:
+            UIPasteboard.general.string = message.text
         }
     }
 }

@@ -313,41 +313,41 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             shouldScrollToTop()
         }
         // mleavy - no use case for this
-//        .transparentNonAnimatingFullScreenCover(item: $viewModel.messageMenuRow) {
-//            if let row = viewModel.messageMenuRow {
-//                ZStack(alignment: .topLeading) {
-//                    theme.colors.messageMenuBackground
-//                        .opacity(menuBgOpacity)
-//                        .ignoresSafeArea(.all)
-//
-//                    if needsScrollView {
-//                        ScrollView {
-//                            messageMenu(row)
-//                        }
-//                        .introspect(.scrollView, on: .iOS(.v16, .v17, .v18)) { scrollView in
-//                            DispatchQueue.main.async {
-//                                self.menuScrollView = scrollView
-//                            }
-//                        }
-//                        .opacity(readyToShowScrollView ? 1 : 0)
-//                    }
-//                    if !needsScrollView || !readyToShowScrollView {
-//                        messageMenu(row)
-//                            .position(menuCellPosition)
-//                    }
-//                }
-//                .onAppear {
-//                    DispatchQueue.main.async {
-//                        if let frame = cellFrames[row.id] {
-//                            showMessageMenu(frame)
-//                        }
-//                    }
-//                }
-//                .onTapGesture {
-//                    hideMessageMenu()
-//                }
-//            }
-//        }
+        .transparentNonAnimatingFullScreenCover(item: $viewModel.messageMenuRow) {
+            if let row = viewModel.messageMenuRow {
+                ZStack(alignment: .topLeading) {
+                    theme.colors.messageMenuBackground
+                        .opacity(menuBgOpacity)
+                        .ignoresSafeArea(.all)
+
+                    if needsScrollView {
+                        ScrollView {
+                            messageMenu(row)
+                        }
+                        .introspect(.scrollView, on: .iOS(.v16, .v17, .v18)) { scrollView in
+                            DispatchQueue.main.async {
+                                self.menuScrollView = scrollView
+                            }
+                        }
+                        .opacity(readyToShowScrollView ? 1 : 0)
+                    }
+                    if !needsScrollView || !readyToShowScrollView {
+                        messageMenu(row)
+                            .position(menuCellPosition)
+                    }
+                }
+                .onAppear {
+                    DispatchQueue.main.async {
+                        if let frame = cellFrames[row.id] {
+                            showMessageMenu(frame)
+                        }
+                    }
+                }
+                .onTapGesture {
+                    hideMessageMenu()
+                }
+            }
+        }
         .onPreferenceChange(MessageMenuPreferenceKey.self) {
             self.cellFrames = $0
         }

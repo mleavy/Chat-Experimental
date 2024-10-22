@@ -18,6 +18,8 @@ public enum DefaultMessageMenuAction: MessageMenuAction {
 
     case reply
     case edit(saveClosure: (String)->Void)
+    //mleavy
+    case copy
 
     public func title() -> String {
         switch self {
@@ -25,6 +27,8 @@ public enum DefaultMessageMenuAction: MessageMenuAction {
             "Reply"
         case .edit:
             "Edit"
+        case .copy:
+            "Copy"
         }
     }
 
@@ -34,6 +38,8 @@ public enum DefaultMessageMenuAction: MessageMenuAction {
             Image(.reply)
         case .edit:
             Image(.edit)
+        case .copy:
+            Image(systemName: "document.on.document")
         }
     }
 
@@ -48,7 +54,9 @@ public enum DefaultMessageMenuAction: MessageMenuAction {
     }
 
     public static var allCases: [DefaultMessageMenuAction] = [
-        .reply, .edit(saveClosure: {_ in})
+        //mleavy
+        //.reply, .edit(saveClosure: {_ in})
+        .copy
     ]
 }
 
