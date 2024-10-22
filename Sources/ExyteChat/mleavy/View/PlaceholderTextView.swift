@@ -71,7 +71,7 @@ class PlaceholderTextView: UITextView {
     /// When the UITextView did change, show or hide the label based on if the UITextView is empty or not
     ///
     /// - Parameter textView: The UITextView that got updated
-    @objc private func textChanged() {
+    @objc func textChanged() {
         if let placeholderLabel = self.viewWithTag(100) as? UILabel {
             placeholderLabel.isHidden = !self.text.isEmpty
         }

@@ -195,6 +195,7 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         inputViewModel.send()
         inputView.textView.text = ""
         textViewDidChange(inputView.textView)
+        (inputView.textView as? PlaceholderTextView)?.textChanged()
     }
     
     @objc private func leadingButtonTapped() {
