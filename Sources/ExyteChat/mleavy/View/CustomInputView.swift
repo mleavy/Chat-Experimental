@@ -162,14 +162,16 @@ class CustomInputManager: NSObject, UITextViewDelegate {
         let size = CGSize(width: textView.frame.size.width, height: .infinity)
         let estimatedSize = textView.sizeThatFits(size)
         let textViewPadding = theme.extensions.textViewPadding.top + theme.extensions.textViewPadding.bottom
-        let newHeight = max(estimatedSize.height + textViewPadding, defaultInputHeight)
+        var newHeight = max(estimatedSize.height + textViewPadding, defaultInputHeight)
         
-        guard textView.contentSize.height < 100.0 else {
+        if newHeight >= 100 {
             textView.isScrollEnabled = true
-            return
+        }
+        else {
+            textView.isScrollEnabled = false
         }
         
-        textView.isScrollEnabled = false
+        newHeight = min(newHeight, 100)
         
         inputView.constraints.forEach { (constraint) in
             if constraint.firstAttribute == .height {
