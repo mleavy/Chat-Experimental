@@ -336,6 +336,7 @@ public struct ChatTheme {
         public var inputViewDefaultHeight: CGFloat
         public var inputViewPlaceholderText: String?
         public var inputViewPlaceholderTextColor: Color
+        public var inputMaxCharacterCount: Int?
         public var hidesScrollToBottomButton: Bool
         public var showsScrollIndicator: Bool
         
@@ -357,6 +358,7 @@ public struct ChatTheme {
             inputViewDefaultHeight: CGFloat = 44,
             inputViewPlaceholderText: String? = nil,
             inputViewPlaceholderTextColor: Color = .gray,
+            inputMaxCharacterCount: Int? = nil,
             hidesScrollToBottomButton: Bool = false,
             showsScrollIndicator: Bool = false,
             myMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 20,
@@ -387,6 +389,7 @@ public struct ChatTheme {
             self.inputViewDefaultHeight = inputViewDefaultHeight
             self.inputViewPlaceholderText = inputViewPlaceholderText
             self.inputViewPlaceholderTextColor = inputViewPlaceholderTextColor
+            self.inputMaxCharacterCount = inputMaxCharacterCount
             self.hidesScrollToBottomButton = hidesScrollToBottomButton
             self.showsScrollIndicator = showsScrollIndicator
             

@@ -11,6 +11,7 @@ import SwiftUI
 extension Notification.Name {
     public static let updateSendButtonState = Notification.Name("com.squidstore.exyteChat.updateSendButtonState")
     public static let updateLeadingButtonImage = Notification.Name("com.squidstore.exyteChat.updateLeadingButtonImage")
+    public static let exceededInputCharacterLimit = Notification.Name("com.squidstore.exyteChat.exceededInputCharacterLimit")
 }
 
 class CustomInputView: UIView {
@@ -146,6 +147,26 @@ class CustomInputManager: NSObject, UITextViewDelegate {
                                                name: .updateLeadingButtonImage,
                                                object: nil)
     }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let max = theme.extensions.inputMaxCharacterCount else {
+            return true
+        }
+        
+        var allowed: Bool = true
+        if let r = textView.text.rangeFromNSRange(nsRange: range) {
+            let updated = textView.text.replacingCharacters(in: r, with: text)
+            allowed = updated.count <= max
+        }
+        else {
+            allowed = text.count <= max
+        }
+        
+        if !allowed {
+            NotificationCenter.default.post(name: .exceededInputCharacterLimit, object: nil)
+        }
+        return allowed
+    }
         
     func textViewDidChange(_ textView: UITextView) {
         
@@ -215,4 +236,10 @@ extension View {
         return renderer.uiImage
     }
     
+}
+
+extension String {
+    func rangeFromNSRange(nsRange : NSRange) -> Range<String.Index>? {
+        return Range(nsRange, in: self)
+    }
 }
