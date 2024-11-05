@@ -337,6 +337,7 @@ public struct ChatTheme {
         public var inputViewPlaceholderText: String?
         public var inputViewPlaceholderTextColor: Color
         public var hidesScrollToBottomButton: Bool
+        public var showsScrollIndicator: Bool
         
         public var myMessageCornerRadii: RectangleCornerRadii
         public var friendMessageCornerRadii: RectangleCornerRadii
@@ -357,6 +358,7 @@ public struct ChatTheme {
             inputViewPlaceholderText: String? = nil,
             inputViewPlaceholderTextColor: Color = .gray,
             hidesScrollToBottomButton: Bool = false,
+            showsScrollIndicator: Bool = false,
             myMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 20,
                                                               bottomLeading: 20,
                                                               bottomTrailing: 20,
@@ -386,6 +388,7 @@ public struct ChatTheme {
             self.inputViewPlaceholderText = inputViewPlaceholderText
             self.inputViewPlaceholderTextColor = inputViewPlaceholderTextColor
             self.hidesScrollToBottomButton = hidesScrollToBottomButton
+            self.showsScrollIndicator = showsScrollIndicator
             
             self.myMessageCornerRadii = myMessageCornerRadii
             self.friendMessageCornerRadii = friendMessageCornerRadii

@@ -67,13 +67,13 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         //mleavy: no transform when filling top to bottom
         if isFillFromBottom {
-            tableView.transform = CGAffineTransform(rotationAngle: (type == .conversation ? .pi : 0))
+            tableView.transform = CGAffineTransform.identity.rotated(by: (type == .conversation ? .pi : 0)).scaledBy(x: theme.extensions.showsScrollIndicator ? -1 : 1, y: 1)
         }
         else {
             tableView.transform = CGAffineTransform(rotationAngle: (type == .conversation ? 0 : 0))
         }
 
-        tableView.showsVerticalScrollIndicator = false
+        tableView.showsVerticalScrollIndicator = theme.extensions.showsScrollIndicator
         tableView.estimatedSectionHeaderHeight = 1
         tableView.estimatedSectionFooterHeight = UITableView.automaticDimension
         tableView.backgroundColor = UIColor(theme.colors.mainBackground)
@@ -622,6 +622,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             let header = UIHostingController(rootView:
                 sectionHeaderViewBuilder(section)
                 .rotationEffect(Angle(degrees: (type == .conversation ? (isFillFromBottom ? 180 : 0) : 0)))
+                .scaleEffect(CGSize(width: (chatTheme.extensions.showsScrollIndicator ? -1 : 1), height: 1))
             ).view
             header?.backgroundColor = UIColor(chatTheme.colors.mainBackground)
             return header
@@ -645,12 +646,20 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 if let headerBuilder {
                     headerBuilder(sections[section].date)
                 } else {
-                    Text(sections[section].formattedDate)
-                        .font(.system(size: 11))
-                        .padding(10)
-                        .padding(.top, 10)
-                        .padding(.bottom, 10)
-                        .foregroundColor(.gray)
+                    VStack {
+                        HStack {
+                        }
+                        .frame(height: 3)
+                        Text(sections[section].formattedDate)
+                            .font(.system(size: 12))
+                            .padding(10)
+                            .padding(.top, 10)
+                            .padding(.bottom, 10)
+                            .foregroundColor(.gray)
+                        HStack {
+                        }
+                        .frame(height: 5)
+                    }
                 }
             }
         }
@@ -668,6 +677,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     .background(MessageMenuPreferenceViewSetter(id: row.id))
                     //mleavy - NO rotation when filling top to bottom
                     .rotationEffect(Angle(degrees: (type == .conversation ? (isFillFromBottom ? 180 : 0) : 0)))
+                    .scaleEffect(CGSize(width: (chatTheme.extensions.showsScrollIndicator ? -1 : 1), height: 1))
                     .onTapGesture { }
                     .applyIf(showMessageMenuOnLongPress) {
                         $0.onLongPressGesture {
