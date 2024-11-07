@@ -17,8 +17,8 @@ struct MessageActivityView: View {
 
     @ViewBuilder
     private func activityView() -> some View {
-        ActivityIndicatorView(isVisible: $showActivity, type: .opacityDots(count: 3, inset: 4))
-            .frame(width: 40, height: 30, alignment: .center)
+        ActivityIndicatorView(isVisible: $showActivity, type: .opacityDots(count: 3, inset: 3))
+            .frame(width: 19, height: 22, alignment: .center)
     }
 }
 
