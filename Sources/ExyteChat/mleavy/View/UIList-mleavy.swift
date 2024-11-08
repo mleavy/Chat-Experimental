@@ -15,7 +15,7 @@
 import SwiftUI
 
 //mleavy:
-let isFillFromBottom: Bool = true
+let isFillFromBottom: Bool = false
 
 struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
 
@@ -196,6 +196,10 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 DispatchQueue.main.async {
                     context.coordinator.sections = sections
                     tableView.reloadData()
+                    
+                    // mleavy - present content top-justified
+                    ensureTopJustified(tableView)
+                    
                     if !isScrollEnabled {
                         DispatchQueue.main.async {
                             tableContentHeight = tableView.contentSize.height
@@ -213,8 +217,10 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 }
             }
             else {
-                if let firstSection = sections.first {
-                    context.coordinator.paginationTargetIndexPath = IndexPath(row: 0 , section: 0)
+                if let _ = sections.first {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                        context.coordinator.paginationTargetIndexPath = IndexPath(row: 0 , section: 0)
+                    })
                 }
             }
 
@@ -287,7 +293,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             }
             tableSemaphore.wait()
 
-            if isScrolledToBottom || isScrolledToTop {
+            let always = true
+            if always {//isScrolledToBottom || isScrolledToTop {
                 DispatchQueue.main.sync {
                     // step 5
                     // apply the rest of the changes to table's dataSource, i.e. inserts
@@ -302,6 +309,11 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                         for operation in insertOperations {
                             applyOperation(operation, tableView: tableView)
                         }
+                        
+                        // mleavy - present content top-justified
+                        ensureTopJustified(tableView)
+                        
+                        
                         tableView.endUpdates()
 
                         if !isScrollEnabled {
@@ -311,24 +323,86 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                         updateSemaphore.signal()
                     }
                     else {
-                        tableView.performUpdate {
-                            for operation in insertOperations {
-                                applyOperation(operation, tableView: tableView)
+                        
+                        context.coordinator.sections = sections
+                        
+                        var topMessageId: String?
+                        if let cell = tableView.visibleCells.first {
+                            if let indexPath = tableView.indexPath(for: cell) {
+                                topMessageId = context.coordinator.sections[indexPath.section].rows[indexPath.row].id
                             }
-                        } completion: {
-                            if !isScrollEnabled {
-                                tableContentHeight = tableView.contentSize.height
-                            }
-                            
-                            //tableView.performSelector(onMainThread: #selector(tableView.scrollToEnd), with: nil, waitUntilDone: true)
-                            
-                            updateSemaphore.signal()
                         }
+                        
+                        
+
+                        
+                        
+                        tableView.reloadData()
+                        
+                        if let topMessageId {
+                            for i in 0..<context.coordinator.sections.count {
+                                for j in 0..<sections[i].rows.count {
+                                    if sections[i].rows[j].id == topMessageId {
+                                        let indexPath = IndexPath(row: j, section: i)
+                                        tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
+//                        tableView.beginUpdates()
+//                        for operation in insertOperations {
+//                            applyOperation(operation, tableView: tableView)
+//                        }
+//                        
+//                        tableView.endUpdates()
+
+                        if !isScrollEnabled {
+                            tableContentHeight = tableView.contentSize.height
+                        }
+
+                        updateSemaphore.signal()
                     }
                 }
             } else {
                 updateSemaphore.signal()
             }
+        }
+    }
+    
+    // mleavy - present content top-justified
+    private func ensureTopJustified(_ tableView: UITableView) {
+        return
+        print("topjust - table content height: \(tableView.contentSize.height)")
+        
+        let perceivedHeight = tableView.frame.height - tableView.contentInset.bottom
+        
+        
+        let contentHeight = tableView.contentSize.height
+        
+        if perceivedHeight > contentHeight {
+            let diff = (perceivedHeight - contentHeight) - tableView.contentInset.bottom
+            print("topjust - diff: \(diff)")
+            tableView.contentInset.top = diff - (tableView.contentInset.bottom * 3)
+        }
+        else {
+            tableView.contentInset.top = 0
+        }
+        
+        let adjustedFrameHeight = tableView.frame.height - tableView.contentInset.bottom
+        if tableView.contentSize.height < adjustedFrameHeight {
+            let diff = adjustedFrameHeight - tableView.contentSize.height
+            tableView.contentInset.top = max(0, diff - tableView.contentInset.bottom)
+            
+            let point = CGPoint(x: -tableView.adjustedContentInset.left,
+                                y: -tableView.adjustedContentInset.top)
+                
+            tableView.setContentOffset(CGPointZero, animated: false)
+        }
+        else {
+            tableView.contentInset.top = 0
         }
     }
 
@@ -518,8 +592,10 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     }
                 }
                 else {
-                    if let firstSection = sections.first {
-                        paginationTargetIndexPath = IndexPath(row: 0 , section: 0)
+                    if let _ = sections.first {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                            self.paginationTargetIndexPath = IndexPath(row: 0 , section: 0)
+                        })
                     }
                 }
             }
@@ -622,7 +698,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             let header = UIHostingController(rootView:
                 sectionHeaderViewBuilder(section)
                 .rotationEffect(Angle(degrees: (type == .conversation ? (isFillFromBottom ? 180 : 0) : 0)))
-                .scaleEffect(CGSize(width: (chatTheme.extensions.showsScrollIndicator ? -1 : 1), height: 1))
+                //.scaleEffect(CGSize(width: (chatTheme.extensions.showsScrollIndicator ? -1 : 1), height: 1))
             ).view
             header?.backgroundColor = UIColor(chatTheme.colors.mainBackground)
             return header
@@ -677,7 +753,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     .background(MessageMenuPreferenceViewSetter(id: row.id))
                     //mleavy - NO rotation when filling top to bottom
                     .rotationEffect(Angle(degrees: (type == .conversation ? (isFillFromBottom ? 180 : 0) : 0)))
-                    .scaleEffect(CGSize(width: (chatTheme.extensions.showsScrollIndicator ? -1 : 1), height: 1))
+                    //.scaleEffect(CGSize(width: (chatTheme.extensions.showsScrollIndicator ? -1 : 1), height: 1))
                     .onTapGesture { }
                     .applyIf(showMessageMenuOnLongPress) {
                         $0.onLongPressGesture {

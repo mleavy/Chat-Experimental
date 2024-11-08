@@ -363,11 +363,12 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
 
             inputViewModel.didSendMessage = { value in
                 didSendMessage(value)
-                if type == .conversation {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
-                    }
-                }
+                // mleavy, unneeded. Client now handles this
+//                if type == .conversation {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//                        NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+//                    }
+//                }
             }
             
             inputViewModel.didTapLeadingButton = {

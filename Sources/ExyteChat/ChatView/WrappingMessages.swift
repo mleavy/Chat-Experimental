@@ -29,7 +29,7 @@ extension ChatView {
         let dates = Set(messages.map({ $0.createdAt.startOfDay() }))
             .sorted()
             //mleavy - NO reverse when filling top to bottom
-            .reversed()
+            //.reversed()
         var result: [MessagesSection] = []
 
         for date in dates {
@@ -52,7 +52,7 @@ extension ChatView {
         let dates = Set(firstLevelMessages.map({ $0.createdAt.startOfDay() }))
             .sorted()
             //mleavy - NO reverse when filling top to bottom
-            .reversed()
+            //.reversed()
         var result: [MessagesSection] = []
 
         for date in dates {
@@ -163,7 +163,7 @@ extension ChatView {
                 return MessageRow(message: $0.element, positionInUserGroup: position, commentsPosition: commentsPosition)
             }
             //mleavy - NO reverse when filling top to bottom
-            .reversed()
+            //.reversed()
     }
 }
 
