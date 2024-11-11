@@ -51,6 +51,8 @@ public class Message: Identifiable, ObservableObject {
     public var createdAt: Date
     //mleavy: conditionally use messageBuilder
     public var usesMessageBuilder: Bool
+    //mleavy: message appearance requires animation
+    public var isAnimated: Bool
 
     public var text: String
     public var attachments: [Attachment]
@@ -91,7 +93,8 @@ public class Message: Identifiable, ObservableObject {
                 attachments: [Attachment] = [],
                 recording: Recording? = nil,
                 replyMessage: ReplyMessage? = nil,
-                isTyping: Bool = false) {
+                isTyping: Bool = false,
+                isAnimated: Bool = false) {
 
         self.id = id
         self.user = user
@@ -103,6 +106,7 @@ public class Message: Identifiable, ObservableObject {
         self.recording = recording
         self.replyMessage = replyMessage
         self.isTyping = isTyping
+        self.isAnimated = isAnimated
     }
 
     public static func makeMessage(

@@ -484,7 +484,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
     // MARK: - Coordinator
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(viewModel: viewModel, inputViewModel: inputViewModel, isScrolledToBottom: $isScrolledToBottom, isScrolledToTop: $isScrolledToTop, messageBuilder: messageBuilder, mainHeaderBuilder: mainHeaderBuilder, headerBuilder: headerBuilder, chatTheme: theme, type: type, showDateHeaders: showDateHeaders, avatarSize: avatarSize, showMessageMenuOnLongPress: showMessageMenuOnLongPress, tapAvatarClosure: tapAvatarClosure, paginationHandler: paginationHandler, messageUseMarkdown: messageUseMarkdown, showMessageTimeView: showMessageTimeView, messageFont: messageFont, sections: sections, ids: ids, mainBackgroundColor: theme.colors.mainBackground)
+        Coordinator(viewModel: viewModel, inputViewModel: inputViewModel, isScrolledToBottom: $isScrolledToBottom, isScrolledToTop: $isScrolledToTop, messageBuilder: messageBuilder, mainHeaderBuilder: mainHeaderBuilder, headerBuilder: headerBuilder, chatTheme: theme, type: type, showDateHeaders: showDateHeaders, avatarSize: avatarSize, showMessageMenuOnLongPress: showMessageMenuOnLongPress, tapAvatarClosure: tapAvatarClosure, paginationHandler: paginationHandler, messageUseMarkdown: messageUseMarkdown, showMessageTimeView: showMessageTimeView, messageFont: messageFont, sections: sections, ids: ids, mainBackgroundColor: theme.colors.mainBackground, inputManager: inputManager)
     }
 
     class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
@@ -526,8 +526,9 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         }
         let ids: [String]
         let mainBackgroundColor: Color
+        let inputManager: CustomInputManager
 
-        init(viewModel: ChatViewModel, inputViewModel: InputViewModel, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, messageBuilder: MessageBuilderClosure?, mainHeaderBuilder: (()->AnyView)?, headerBuilder: ((Date)->AnyView)?, chatTheme: ChatTheme, type: ChatType, showDateHeaders: Bool, avatarSize: CGFloat, showMessageMenuOnLongPress: Bool, tapAvatarClosure: ChatView.TapAvatarClosure?, paginationHandler: PaginationHandler?, messageUseMarkdown: Bool, showMessageTimeView: Bool, messageFont: UIFont, sections: [MessagesSection], ids: [String], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil) {
+        init(viewModel: ChatViewModel, inputViewModel: InputViewModel, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, messageBuilder: MessageBuilderClosure?, mainHeaderBuilder: (()->AnyView)?, headerBuilder: ((Date)->AnyView)?, chatTheme: ChatTheme, type: ChatType, showDateHeaders: Bool, avatarSize: CGFloat, showMessageMenuOnLongPress: Bool, tapAvatarClosure: ChatView.TapAvatarClosure?, paginationHandler: PaginationHandler?, messageUseMarkdown: Bool, showMessageTimeView: Bool, messageFont: UIFont, sections: [MessagesSection], ids: [String], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil, inputManager: CustomInputManager) {
             self.viewModel = viewModel
             self.inputViewModel = inputViewModel
             self._isScrolledToBottom = isScrolledToBottom
@@ -549,6 +550,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             self.ids = ids
             self.mainBackgroundColor = mainBackgroundColor
             self.paginationTargetIndexPath = paginationTargetIndexPath
+            self.inputManager = inputManager
         }
 
         /// call pagination handler when this row is reached
@@ -694,7 +696,42 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
             print("section = \(indexPath.section), row = \(indexPath.row)")
             guard let paginationHandler = self.paginationHandler, let paginationTargetIndexPath, indexPath == paginationTargetIndexPath else {
+                
+                let row = sections[indexPath.section].rows[indexPath.row]
+                if row.message.isAnimated {
+                    row.message.isAnimated = false
+                    
+                    if row.message.user.isCurrentUser {
+                        
+                        let inputContainer = inputManager.inputView
+                        if let tableContainer = inputContainer.superview {
+                            let cellPoint = cell.convert(cell.frame, to: tableContainer)
+                            let inputPoint = inputManager.inputView.textView.convert(inputManager.inputView.textView.frame, to: tableContainer)
+                            
+                            let diffX = inputPoint.minX - cellPoint.midX
+                            let diffY = cellPoint.minY - inputPoint.minY
+                            
+                            print("translating by \(diffX) and \(diffY)")
+                            
+                            cell.transform = .init(translationX: diffX, y: diffY)
+                            cell.layer.opacity = 0
+                        }
+                    }
+                    else {
+                        cell.layer.opacity = 0
+                        cell.layer.anchorPoint = .init(x: 0.0,
+                                                       y: 0.5)
+                        cell.transform = .init(scaleX: 0, y: 0)
+                    }
+                    
+                    UIView.animate(withDuration: 0.4) {
+                        cell.layer.opacity = 1
+                        cell.transform = .identity
+                    }
+                }
+                
                 return
+                
             }
 
             let row = self.sections[indexPath.section].rows[indexPath.row]
