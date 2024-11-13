@@ -287,7 +287,13 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             }
             tableSemaphore.wait()
 
-            if isScrolledToBottom || isScrolledToTop {
+            // mleavy: what is this "if isScrolledToBottom || isScrolledToTop"
+            // bs? Inserts never occur unless the view is at either extreme end?
+            // how does that make any sense?
+            
+            //if isScrolledToBottom || isScrolledToTop {
+            let always = true
+            if always {
                 DispatchQueue.main.sync {
                     // step 5
                     // apply the rest of the changes to table's dataSource, i.e. inserts
@@ -556,6 +562,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         /// call pagination handler when this row is reached
         /// without this there is a bug: during new cells insertion willDisplay is called one extra time for the cell which used to be the last one while it is being updated (its position in group is changed from first to middle)
         var paginationTargetIndexPath: IndexPath?
+        
+        var isScrolledNearBottom: Bool = true
 
         func numberOfSections(in tableView: UITableView) -> Int {
             return sections.count
@@ -701,6 +709,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 if row.message.isAnimated {
                     row.message.isAnimated = false
                     
+                    guard isScrolledNearBottom else { return }
+                    
                     if row.message.user.isCurrentUser {
                         
                         let inputContainer = inputManager.inputView
@@ -743,6 +753,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             isScrolledToBottom = scrollView.contentOffset.y <= 0
             isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 1
+            isScrolledNearBottom = scrollView.contentOffset.y <= 50
         }
     }
 
