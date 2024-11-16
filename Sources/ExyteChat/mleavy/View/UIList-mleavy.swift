@@ -613,7 +613,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 if !showDateHeaders && (section != 0 || mainHeaderBuilder == nil) {
                     return 0.1
                 }
-                return type == .conversation ? 0.1 : UITableView.automaticDimension
+                return type == .conversation ? UITableView.automaticDimension : UITableView.automaticDimension
             }
             else {
                 if !showDateHeaders && (section != 0 || mainHeaderBuilder == nil) {
@@ -657,19 +657,13 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     headerBuilder(sections[section].date)
                 } else {
                     VStack {
-                        HStack {
-                        }
-                        .frame(height: 3)
                         Text(sections[section].formattedDate)
                             .font(.system(size: 12))
-                            .padding(10)
-                            .padding(.top, 10)
-                            .padding(.bottom, 10)
+                            .padding(.top, -6)
+                            .padding(.bottom, 5)
                             .foregroundColor(.gray)
-                        HStack {
-                        }
-                        .frame(height: 5)
                     }
+                    .padding(0)
                 }
             }
         }
