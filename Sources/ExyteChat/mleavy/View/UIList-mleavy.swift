@@ -723,9 +723,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     }
                     else {
                         cell.layer.opacity = 0
-                        cell.layer.anchorPoint = .init(x: 0.0,
-                                                       y: 0.5)
-                        cell.transform = .init(scaleX: 0, y: 0)
+                        cell.transform = .init(scaleX: 0, y: 0).concatenating(.init(translationX: -cell.frame.width, y: 0))
                     }
                     
                     UIView.animate(withDuration: 0.4) {
