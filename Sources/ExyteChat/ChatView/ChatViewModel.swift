@@ -53,6 +53,7 @@ final class ChatViewModel: ObservableObject {
         //mleavy
         case .copy:
             UIPasteboard.general.string = message.text
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
     }
 }
