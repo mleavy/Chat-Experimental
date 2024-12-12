@@ -345,6 +345,8 @@ public struct ChatTheme {
         public var myAttachmentMessageCornerRadii: RectangleCornerRadii
         public var friendAttachmentMessageCornerRadii: RectangleCornerRadii
         
+        public var friendMessageAppearanceDelay: TimeInterval
+        
         public var sendButtonEnableClosure: (() -> Bool)?
         
         public init(
@@ -377,6 +379,7 @@ public struct ChatTheme {
                                                                       bottomLeading: 12,
                                                                       bottomTrailing: 12,
                                                                       topTrailing: 12),
+            friendMessageAppearanceDelay: TimeInterval = 0,
             sendButtonEnableClosure: (() -> Bool)? = nil
         ) {
             self.isKeyboardInteractive = isKeyboardInteractive
@@ -397,6 +400,7 @@ public struct ChatTheme {
             self.friendMessageCornerRadii = friendMessageCornerRadii
             self.myAttachmentMessageCornerRadii = myAttachmentMessageCornerRadii
             self.friendAttachmentMessageCornerRadii = friendAttachmentMessageCornerRadii
+            self.friendMessageAppearanceDelay = friendMessageAppearanceDelay
             
             self.sendButtonEnableClosure = sendButtonEnableClosure
         }

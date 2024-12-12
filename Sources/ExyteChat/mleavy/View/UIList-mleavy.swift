@@ -720,15 +720,20 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                             cell.transform = .init(translationX: diffX, y: diffY)
                             cell.layer.opacity = 0
                         }
+                        
+                        UIView.animate(withDuration: 0.4) {
+                            cell.layer.opacity = 1
+                            cell.transform = .identity
+                        }
                     }
                     else {
                         cell.layer.opacity = 0
                         cell.transform = .init(scaleX: 0, y: 0).concatenating(.init(translationX: -cell.frame.width, y: 0))
-                    }
-                    
-                    UIView.animate(withDuration: 0.4) {
-                        cell.layer.opacity = 1
-                        cell.transform = .identity
+                        
+                        UIView.animate(withDuration: 0.4, delay: chatTheme.extensions.friendMessageAppearanceDelay, options: .curveEaseInOut) {
+                            cell.layer.opacity = 1
+                            cell.transform = .identity
+                        }
                     }
                 }
                 
