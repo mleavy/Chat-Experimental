@@ -535,7 +535,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         let ids: [String]
         let mainBackgroundColor: Color
         let inputManager: CustomInputManager
-
+        
         init(viewModel: ChatViewModel, inputViewModel: InputViewModel, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, messageBuilder: MessageBuilderClosure?, mainHeaderBuilder: (()->AnyView)?, headerBuilder: ((Date)->AnyView)?, chatTheme: ChatTheme, type: ChatType, showDateHeaders: Bool, avatarSize: CGFloat, showMessageMenuOnLongPress: Bool, tapAvatarClosure: ChatView.TapAvatarClosure?, tapReactionClosure: ReactionTappedClosure?, paginationHandler: PaginationHandler?, messageUseMarkdown: Bool, showMessageTimeView: Bool, messageFont: UIFont, sections: [MessagesSection], ids: [String], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil, inputManager: CustomInputManager) {
             self.viewModel = viewModel
             self.inputViewModel = inputViewModel
@@ -688,6 +688,10 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     .onTapGesture { }
                     .applyIf(showMessageMenuOnLongPress) {
                         $0.onLongPressGesture {
+                            print("cell frame \(tableViewCell.frame), contentOffset \(tableView.contentOffset), table height \(tableView.frame.height)")
+                            if (tableViewCell.frame.origin.y - tableViewCell.frame.height > tableView.contentOffset.y) {
+                                tableView.scrollRectToVisible(tableViewCell.frame, animated: false)
+                            }
                             self.viewModel.messageMenuRow = row
                         }
                     }
@@ -697,7 +701,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
 
             return tableViewCell
         }
-
+        
         func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
             print("section = \(indexPath.section), row = \(indexPath.row)")
             guard let paginationHandler = self.paginationHandler, let paginationTargetIndexPath, indexPath == paginationTargetIndexPath else {

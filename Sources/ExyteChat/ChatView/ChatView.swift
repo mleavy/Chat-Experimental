@@ -444,19 +444,24 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     func showMessageMenu(_ cellFrame: CGRect) {
         DispatchQueue.main.async {
             let wholeMenuHeight = menuButtonsSize.height + cellFrame.height
-            let needsScrollTemp = wholeMenuHeight > UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom
+            var needsScrollTemp = wholeMenuHeight > UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom
+            needsScrollTemp = false
 
             menuCellPosition = CGPoint(x: cellFrame.midX, y: cellFrame.minY + wholeMenuHeight/2 - safeAreaInsets.top)
             menuCellOpacity = 1
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                 var finalCellPosition = menuCellPosition
-                if needsScrollTemp ||
-                    cellFrame.minY + wholeMenuHeight + safeAreaInsets.bottom > UIScreen.main.bounds.height {
-
-                    finalCellPosition = CGPoint(x: cellFrame.midX, y: UIScreen.main.bounds.height - wholeMenuHeight/2 - safeAreaInsets.top - safeAreaInsets.bottom
-                    )
-                }
+                //mleavy: everything in this method looks like complete b.s.
+                //commenting this crap out because it is just random nonsense, and we're
+                //scrolling the table view cell to visible in the cell's long press handler
+                //(search for: `.applyIf(showMessageMenuOnLongPress)`)
+//                if needsScrollTemp ||
+//                    cellFrame.minY + wholeMenuHeight + safeAreaInsets.bottom > UIScreen.main.bounds.height {
+//
+//                    finalCellPosition = CGPoint(x: cellFrame.midX, y: UIScreen.main.bounds.height - wholeMenuHeight/2 - safeAreaInsets.top - safeAreaInsets.bottom
+//                    )
+//                }
 
                 withAnimation(.linear(duration: 0.1)) {
                     menuBgOpacity = 0.9
