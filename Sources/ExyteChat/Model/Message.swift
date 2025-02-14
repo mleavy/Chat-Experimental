@@ -63,6 +63,7 @@ public class Message: Identifiable, ObservableObject {
     
     //mleavy
     @Published public var reaction: String?
+    public var isReactable: Bool = false
     
     //mleavy
     @Published public var isTyping: Bool {

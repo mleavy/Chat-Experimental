@@ -79,6 +79,7 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
     @Binding var isShowingMenu: Bool
     @Binding var menuButtonsSize: CGSize
     var alignment: Alignment
+    var isReactable: Bool
     var existingReaction: String?
     var leadingPadding: CGFloat
     var trailingPadding: CGFloat
@@ -92,7 +93,7 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
     @State var scale: CGFloat = 1
             
     var body: some View {
-        if alignment == .right {
+        if !isReactable {
             FloatingButton(
                 mainButtonView: mainButton().allowsHitTesting(false),
                 buttons: ActionEnum.allCases.map {
