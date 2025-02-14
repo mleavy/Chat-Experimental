@@ -83,9 +83,27 @@ public class Message: Identifiable, ObservableObject {
     }
     
     public func stopTyping(with responseMessage: Message) {
-        self.text = responseMessage.text
         self.createdAt = responseMessage.createdAt
         self.isTyping = false
+        self.id = responseMessage.id
+        self.isReactable = responseMessage.isReactable
+        
+        self.text = ""
+        typeText(text: responseMessage.text, index: 0)
+    }
+    
+    private func typeText(text: String, index: Int) {
+        if index >= text.count {
+            NotificationCenter.default.post(name: .onReloadData, object: nil)
+            return
+        }
+        
+        self.text.append(text[index])
+        self.isTyping = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.020) {
+            self.typeText(text: text, index: index+1)
+        }
+            
     }
 
     public init(id: String,
@@ -221,5 +239,32 @@ public extension Message {
 
     func toReplyMessage() -> ReplyMessage {
         ReplyMessage(id: id, user: user, createdAt: createdAt, text: text, attachments: attachments, recording: recording)
+    }
+}
+
+extension String {
+
+    var length: Int {
+        return count
+    }
+
+    subscript (i: Int) -> String {
+        return self[i ..< i + 1]
+    }
+
+    func substring(fromIndex: Int) -> String {
+        return self[min(fromIndex, length) ..< length]
+    }
+
+    func substring(toIndex: Int) -> String {
+        return self[0 ..< max(0, toIndex)]
+    }
+
+    subscript (r: Range<Int>) -> String {
+        let range = Range(uncheckedBounds: (lower: max(0, min(length, r.lowerBound)),
+                                            upper: min(length, max(0, r.upperBound))))
+        let start = index(startIndex, offsetBy: range.lowerBound)
+        let end = index(start, offsetBy: range.upperBound - range.lowerBound)
+        return String(self[start ..< end])
     }
 }

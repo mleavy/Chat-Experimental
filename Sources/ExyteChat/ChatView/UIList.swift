@@ -9,6 +9,7 @@ import SwiftUI
 
 public extension Notification.Name {
     static let onScrollToBottom = Notification.Name("onScrollToBottom")
+    static let onReloadData = Notification.Name("onReloadData")
 }
 
 //mleavy: renamed, there is a new UIList in mleavy folder

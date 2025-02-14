@@ -110,6 +110,12 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 }
             }
         }
+        
+        NotificationCenter.default.addObserver(forName: .onReloadData, object: nil, queue: nil) { _ in
+            DispatchQueue.main.async {
+                tableView.reloadData()
+            }
+        }
 
         DispatchQueue.main.async {
             shouldScrollToTop = {
@@ -688,7 +694,6 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                     .onTapGesture { }
                     .applyIf(showMessageMenuOnLongPress) {
                         $0.onLongPressGesture {
-                            print("cell frame \(tableViewCell.frame), contentOffset \(tableView.contentOffset), table height \(tableView.frame.height)")
                             if (tableViewCell.frame.origin.y - tableViewCell.frame.height > tableView.contentOffset.y) {
                                 tableView.scrollRectToVisible(tableViewCell.frame, animated: false)
                             }
