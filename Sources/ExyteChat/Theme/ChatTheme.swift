@@ -340,6 +340,9 @@ public struct ChatTheme {
         public var hidesScrollToBottomButton: Bool
         public var showsScrollIndicator: Bool
         
+        public var reactionsBackgroundColor: Color
+        public var reactionsBorderColor: Color
+        
         public var myMessageCornerRadii: RectangleCornerRadii
         public var friendMessageCornerRadii: RectangleCornerRadii
         public var myAttachmentMessageCornerRadii: RectangleCornerRadii
@@ -363,6 +366,8 @@ public struct ChatTheme {
             inputMaxCharacterCount: Int? = nil,
             hidesScrollToBottomButton: Bool = false,
             showsScrollIndicator: Bool = false,
+            reactionsBackgroundColor: Color = .white,
+            reactionsBorderColor: Color = .gray,
             myMessageCornerRadii: RectangleCornerRadii = .init(topLeading: 20,
                                                               bottomLeading: 20,
                                                               bottomTrailing: 20,
@@ -395,6 +400,9 @@ public struct ChatTheme {
             self.inputMaxCharacterCount = inputMaxCharacterCount
             self.hidesScrollToBottomButton = hidesScrollToBottomButton
             self.showsScrollIndicator = showsScrollIndicator
+            
+            self.reactionsBackgroundColor = reactionsBackgroundColor
+            self.reactionsBorderColor = reactionsBorderColor
             
             self.myMessageCornerRadii = myMessageCornerRadii
             self.friendMessageCornerRadii = friendMessageCornerRadii

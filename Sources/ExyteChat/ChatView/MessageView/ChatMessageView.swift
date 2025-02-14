@@ -19,6 +19,7 @@ struct ChatMessageView<MessageContent: View>: View {
     let chatType: ChatType
     let avatarSize: CGFloat
     let tapAvatarClosure: ChatView.TapAvatarClosure?
+    let tapReactionClosure: ReactionTappedClosure?
     let messageUseMarkdown: Bool
     let isDisplayingMessageMenu: Bool
     let showMessageTimeView: Bool
@@ -45,10 +46,13 @@ struct ChatMessageView<MessageContent: View>: View {
                     chatType: chatType,
                     avatarSize: avatarSize,
                     tapAvatarClosure: tapAvatarClosure,
+                    tapReactionClosure: tapReactionClosure,
                     messageUseMarkdown: messageUseMarkdown,
                     isDisplayingMessageMenu: isDisplayingMessageMenu,
                     showMessageTimeView: showMessageTimeView,
-                    font: messageFont)
+                    reactionScale: row.message.reaction == nil ? 0 : 1,
+                    font: messageFont
+                    )
             }
         }
         .id(row.message.id)

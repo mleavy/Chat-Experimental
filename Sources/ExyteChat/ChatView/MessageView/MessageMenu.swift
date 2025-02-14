@@ -5,6 +5,8 @@
 //  Created by Alisa Mylnikova on 20.03.2023.
 //
 
+//mleavy - replaced by MessageReactionMenu
+/*
 import SwiftUI
 import FloatingButton
 import enum FloatingButton.Alignment
@@ -123,3 +125,4 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
         }
     }
 }
+*/

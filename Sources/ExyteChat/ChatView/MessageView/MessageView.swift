@@ -19,6 +19,7 @@ struct MessageView: View {
     let chatType: ChatType
     let avatarSize: CGFloat
     let tapAvatarClosure: ChatView.TapAvatarClosure?
+    let tapReactionClosure: ReactionTappedClosure?
     let messageUseMarkdown: Bool
     let isDisplayingMessageMenu: Bool
     let showMessageTimeView: Bool
@@ -26,6 +27,8 @@ struct MessageView: View {
     @State var avatarViewSize: CGSize = .zero
     @State var statusSize: CGSize = .zero
     @State var timeSize: CGSize = .zero
+    
+    @State var reactionScale: CGFloat = 0.0
 
     static let widthWithMedia: CGFloat = 204
     static let horizontalNoAvatarPadding: CGFloat = 8
@@ -123,32 +126,66 @@ struct MessageView: View {
 
     @ViewBuilder
     func bubbleView(_ message: Message) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            //mleavy: support for "typing" indicator sort of thing
-            if message.status == .sending && !message.user.isCurrentUser {
-                replyWaitingView()
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                //mleavy: support for "typing" indicator sort of thing
+                if message.status == .sending && !message.user.isCurrentUser {
+                    replyWaitingView()
+                }
+                else {
+                    if !message.attachments.isEmpty {
+                        attachmentsView(message)
+                    }
+                    
+                    if !message.text.isEmpty {
+                        textWithTimeView(message)
+                            .font(Font(font))
+                    }
+                    
+                    if let recording = message.recording {
+                        VStack(alignment: .trailing, spacing: 8) {
+                            recordingView(recording)
+                            messageTimeView()
+                                .padding(.bottom, 8)
+                                .padding(.trailing, 12)
+                        }
+                    }
+                }
             }
-            else {
-                if !message.attachments.isEmpty {
-                    attachmentsView(message)
+            .bubbleBackground(message, theme: theme)
+            
+            VStack {
+                Spacer()
+                Button(action: {
+                    tapReactionClosure?(message, message.reaction)
+                }) {
+                    Text(message.reaction ?? "")
+                        .font(.system(size: 13))
+                        .frame(width: 24, height: 24)
+                        .background(.white)
+                        .foregroundColor(.black)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(theme.extensions.reactionsBorderColor, lineWidth: 2)
+                        )
                 }
-                
-                if !message.text.isEmpty {
-                    textWithTimeView(message)
-                        .font(Font(font))
+                .offset(x: -12, y: 0)
+                .scaleEffect(reactionScale)
+                .onReceive(NotificationCenter.default.publisher(for: .reactionRemovedNotification, object: nil)) { notification in
+                    guard let notificationMessage = notification.object as? Message, notificationMessage.id == message.id else { return }
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        reactionScale = 0
+                    }
                 }
-                
-                if let recording = message.recording {
-                    VStack(alignment: .trailing, spacing: 8) {
-                        recordingView(recording)
-                        messageTimeView()
-                            .padding(.bottom, 8)
-                            .padding(.trailing, 12)
+                .onReceive(NotificationCenter.default.publisher(for: .reactionAddedNotification, object: nil)) { notification in
+                    guard let notificationMessage = notification.object as? Message, notificationMessage.id == message.id else { return }
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        reactionScale = 1.0
                     }
                 }
             }
         }
-        .bubbleBackground(message, theme: theme)
     }
 
     @ViewBuilder
@@ -377,6 +414,7 @@ struct MessageView_Preview: PreviewProvider {
                 chatType: .conversation,
                 avatarSize: 32,
                 tapAvatarClosure: nil,
+                tapReactionClosure: nil,
                 messageUseMarkdown: false,
                 isDisplayingMessageMenu: false,
                 showMessageTimeView: true,

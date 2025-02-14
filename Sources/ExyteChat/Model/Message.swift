@@ -62,6 +62,9 @@ public class Message: Identifiable, ObservableObject {
     public var triggerRedraw: UUID?
     
     //mleavy
+    @Published public var reaction: String?
+    
+    //mleavy
     @Published public var isTyping: Bool {
         didSet {
             if !isTyping {
@@ -90,11 +93,13 @@ public class Message: Identifiable, ObservableObject {
                 createdAt: Date = Date(),
                 usesMessageBuilder: Bool = true, //mleavy: conditionally use messageBuilder
                 text: String = "",
+                reaction: String? = nil,
                 attachments: [Attachment] = [],
                 recording: Recording? = nil,
                 replyMessage: ReplyMessage? = nil,
                 isTyping: Bool = false,
-                isAnimated: Bool = false) {
+                isAnimated: Bool = false,
+                isReactionAnimated: Bool = false) {
 
         self.id = id
         self.user = user
@@ -102,6 +107,7 @@ public class Message: Identifiable, ObservableObject {
         self.createdAt = createdAt
         self.usesMessageBuilder = usesMessageBuilder //mleavy: conditionally use messageBuilder
         self.text = text
+        self.reaction = reaction
         self.attachments = attachments
         self.recording = recording
         self.replyMessage = replyMessage

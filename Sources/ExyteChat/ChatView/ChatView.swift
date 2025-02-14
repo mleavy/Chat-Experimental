@@ -11,6 +11,9 @@ import SwiftUIIntrospect
 import ExyteMediaPicker
 
 public typealias MediaPickerParameters = SelectionParamsHolder
+// mleavy
+public typealias ReactionClosure = (Message, String?) -> ()
+public typealias ReactionTappedClosure = (Message, String?) -> ()
 
 public enum ChatType {
     case conversation // the latest message is at the bottom, new messages appear from the bottom
@@ -81,6 +84,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     let didSendMessage: (DraftMessage) -> Void
     //mleavy
     var didTapInteractiveLeadingButton: TappedInteractiveInputLeadingButtonClosure?
+    var didApplyReaction: ReactionClosure?
+    var didTapReaction: ReactionTappedClosure?
 
     // MARK: - View builders
 
@@ -294,6 +299,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                avatarSize: avatarSize,
                showMessageMenuOnLongPress: showMessageMenuOnLongPress,
                tapAvatarClosure: tapAvatarClosure,
+               tapReactionClosure: didTapReaction,
                paginationHandler: paginationHandler,
                messageUseMarkdown: messageUseMarkdown,
                showMessageTimeView: showMessageTimeView,
@@ -360,6 +366,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             viewModel.didSendMessage = didSendMessage
             viewModel.inputViewModel = inputViewModel
             viewModel.globalFocusState = globalFocusState
+            
+            viewModel.didApplyReaction = didApplyReaction
 
             inputViewModel.didSendMessage = { value in
                 didSendMessage(value)
@@ -404,10 +412,11 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             isShowingMenu: $isShowingMenu,
             menuButtonsSize: $menuButtonsSize,
             alignment: row.message.user.isCurrentUser ? .right : .left,
+            existingReaction: row.message.reaction,
             leadingPadding: avatarSize + MessageView.horizontalAvatarPadding * 2,
             trailingPadding: MessageView.statusViewSize + MessageView.horizontalStatusPadding,
             onAction: menuActionClosure(row.message)) {
-                ChatMessageView(viewModel: viewModel, messageBuilder: messageBuilder, row: row, chatType: type, avatarSize: avatarSize, tapAvatarClosure: nil, messageUseMarkdown: messageUseMarkdown, isDisplayingMessageMenu: true, showMessageTimeView: showMessageTimeView, messageFont: messageFont)
+                ChatMessageView(viewModel: viewModel, messageBuilder: messageBuilder, row: row, chatType: type, avatarSize: avatarSize, tapAvatarClosure: nil, tapReactionClosure: nil, messageUseMarkdown: messageUseMarkdown, isDisplayingMessageMenu: true, showMessageTimeView: showMessageTimeView, messageFont: messageFont)
                     .onTapGesture {
                         hideMessageMenu()
                     }
@@ -574,6 +583,18 @@ public extension ChatView {
     func interactiveLeadingButtonClosure(_ closure: @escaping TappedInteractiveInputLeadingButtonClosure) -> ChatView {
         var view = self
         view.didTapInteractiveLeadingButton = closure
+        return view
+    }
+    
+    func reactionAppliedClosure(_ closure: @escaping ReactionClosure) -> ChatView {
+        var view = self
+        view.didApplyReaction = closure
+        return view
+    }
+    
+    func reactionTappedClosure(_ closure: @escaping ReactionTappedClosure) -> ChatView {
+        var view = self
+        view.didTapReaction = closure
         return view
     }
 

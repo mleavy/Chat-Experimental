@@ -15,6 +15,8 @@ final class ChatViewModel: ObservableObject {
     let inputFieldId = UUID()
 
     var didSendMessage: (DraftMessage) -> Void = {_ in}
+    // mleavy
+    var didApplyReaction: ReactionClosure?
     var inputViewModel: InputViewModel?
     var globalFocusState: GlobalFocusState?
 
@@ -54,6 +56,10 @@ final class ChatViewModel: ObservableObject {
         case .copy:
             UIPasteboard.general.string = message.text
             UINotificationFeedbackGenerator().notificationOccurred(.success)
+        case .reaction(let reaction):
+            let addingReaction = reaction != message.reaction
+            
+            didApplyReaction?(message, addingReaction ? reaction : nil)
         }
     }
 }
