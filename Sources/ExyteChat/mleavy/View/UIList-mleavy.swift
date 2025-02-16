@@ -729,8 +729,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                             
                             print("translating by \(diffX) and \(diffY)")
                             
-                            cell.transform = .init(translationX: diffX, y: diffY)
-                            cell.layer.opacity = 0
+                            cell.transform = .init(scaleX: 0.3, y: 0.3).concatenating(.init(translationX: diffX, y: diffY))
+                            cell.layer.opacity = 0.65
                         }
                         
                         UIView.animate(withDuration: 0.4) {
@@ -742,7 +742,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                         cell.layer.opacity = 0
                         cell.transform = .init(scaleX: 0, y: 0).concatenating(.init(translationX: -cell.frame.width, y: 0))
                         
-                        UIView.animate(withDuration: 0.4, delay: chatTheme.extensions.friendMessageAppearanceDelay, options: .curveEaseInOut) {
+                        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut) {
                             cell.layer.opacity = 1
                             cell.transform = .identity
                         }

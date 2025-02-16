@@ -88,22 +88,7 @@ public class Message: Identifiable, ObservableObject {
         self.id = responseMessage.id
         self.isReactable = responseMessage.isReactable
         
-        self.text = ""
-        typeText(text: responseMessage.text, index: 0)
-    }
-    
-    private func typeText(text: String, index: Int) {
-        if index >= text.count {
-            NotificationCenter.default.post(name: .onReloadData, object: nil)
-            return
-        }
-        
-        self.text.append(text[index])
-        self.isTyping = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.020) {
-            self.typeText(text: text, index: index+1)
-        }
-            
+        self.text = responseMessage.text
     }
 
     public init(id: String,
