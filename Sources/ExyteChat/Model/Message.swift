@@ -89,6 +89,7 @@ public class Message: Identifiable, ObservableObject {
         self.isReactable = responseMessage.isReactable
         
         self.text = responseMessage.text
+        NotificationCenter.default.post(name: .onReloadData, object: nil)
     }
 
     public init(id: String,
