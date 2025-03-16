@@ -328,6 +328,7 @@ public struct ChatTheme {
     public struct Extensions {
         public var isKeyboardInteractive: Bool
         public var conversaionViewInsets: EdgeInsets
+        public var sendButtonDisabedImage: Image?
         public var leadingButtonImage: Image
         public var leadingButtonWidth: CGFloat
         public var leadingButtonBackgroundColor: Color
@@ -359,6 +360,7 @@ public struct ChatTheme {
         public init(
             isKeyboardInteractive: Bool = false,
             conversaionViewInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0),
+            sendButtonDisabedImage: Image? = nil,
             leadingButtonImage: Image? = nil,
             leadingButtonWidth: CGFloat = 0,
             leadingButtonBackgroundColor: Color = .clear,
@@ -397,6 +399,7 @@ public struct ChatTheme {
         ) {
             self.isKeyboardInteractive = isKeyboardInteractive
             self.conversaionViewInsets = conversaionViewInsets
+            self.sendButtonDisabedImage = sendButtonDisabedImage
             self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
             self.leadingButtonWidth = leadingButtonWidth
             self.leadingButtonBackgroundColor = leadingButtonBackgroundColor

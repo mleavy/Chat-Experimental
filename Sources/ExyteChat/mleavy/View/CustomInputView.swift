@@ -92,6 +92,10 @@ class CustomInputView: UIView {
         
         leadingButton.setImage(leadingImage, for: .normal)
         sendButton.setImage(sendImage, for: .normal)
+        if let disabled = theme.extensions.sendButtonDisabedImage {
+            let sendDisabledImage: UIImage? = disabled.render(scale: UIScreen.main.scale)
+            sendButton.setImage(sendDisabledImage, for: .disabled)
+        }
         
         containerView.backgroundColor = UIColor(theme.colors.inputLightContextBackground)
         containerView.layer.cornerRadius = theme.extensions.inputViewDefaultHeight / 2
