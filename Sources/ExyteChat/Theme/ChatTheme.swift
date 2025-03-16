@@ -329,6 +329,8 @@ public struct ChatTheme {
         public var isKeyboardInteractive: Bool
         public var conversaionViewInsets: EdgeInsets
         public var leadingButtonImage: Image
+        public var leadingButtonWidth: CGFloat
+        public var leadingButtonBackgroundColor: Color
         public var buttonSize: CGSize
         public var buttonToFramePadding: CGFloat
         public var textViewPadding: EdgeInsets
@@ -336,6 +338,8 @@ public struct ChatTheme {
         public var inputViewDefaultHeight: CGFloat
         public var inputViewPlaceholderText: String?
         public var inputViewPlaceholderTextColor: Color
+        public var inputViewBorderWidth: CGFloat
+        public var inputViewBorderColor: Color
         public var inputMaxCharacterCount: Int?
         public var hidesScrollToBottomButton: Bool
         public var showsScrollIndicator: Bool
@@ -356,6 +360,8 @@ public struct ChatTheme {
             isKeyboardInteractive: Bool = false,
             conversaionViewInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0),
             leadingButtonImage: Image? = nil,
+            leadingButtonWidth: CGFloat = 0,
+            leadingButtonBackgroundColor: Color = .clear,
             buttonSize: CGSize = .init(width: 28, height: 28),
             buttonToFramePadding: CGFloat = 8,
             textViewPadding: EdgeInsets = .init(top: 0, leading: 7, bottom: 0, trailing: 7),
@@ -363,6 +369,8 @@ public struct ChatTheme {
             inputViewDefaultHeight: CGFloat = 44,
             inputViewPlaceholderText: String? = nil,
             inputViewPlaceholderTextColor: Color = .gray,
+            inputViewBorderWidth: CGFloat = 0,
+            inputViewBorderColor: Color = .clear,
             inputMaxCharacterCount: Int? = nil,
             hidesScrollToBottomButton: Bool = false,
             showsScrollIndicator: Bool = false,
@@ -390,6 +398,8 @@ public struct ChatTheme {
             self.isKeyboardInteractive = isKeyboardInteractive
             self.conversaionViewInsets = conversaionViewInsets
             self.leadingButtonImage = leadingButtonImage ?? Image("camera", bundle: .current)
+            self.leadingButtonWidth = leadingButtonWidth
+            self.leadingButtonBackgroundColor = leadingButtonBackgroundColor
             self.buttonSize = buttonSize
             self.buttonToFramePadding = buttonToFramePadding
             self.textViewPadding = textViewPadding
@@ -397,6 +407,8 @@ public struct ChatTheme {
             self.inputViewDefaultHeight = inputViewDefaultHeight
             self.inputViewPlaceholderText = inputViewPlaceholderText
             self.inputViewPlaceholderTextColor = inputViewPlaceholderTextColor
+            self.inputViewBorderWidth = inputViewBorderWidth
+            self.inputViewBorderColor = inputViewBorderColor
             self.inputMaxCharacterCount = inputMaxCharacterCount
             self.hidesScrollToBottomButton = hidesScrollToBottomButton
             self.showsScrollIndicator = showsScrollIndicator

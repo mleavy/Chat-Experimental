@@ -48,15 +48,16 @@ class CustomInputView: UIView {
         
         leadingButton = UIButton(frame: .zero)
         leadingButton.translatesAutoresizingMaskIntoConstraints = false
+        leadingButton.backgroundColor = UIColor(theme.extensions.leadingButtonBackgroundColor)
         containerView.addSubview(leadingButton)
         
         let buttonBottomConstraint = -(floor((theme.extensions.inputViewDefaultHeight / 2) - (theme.extensions.buttonSize.height / 2)))
         
         NSLayoutConstraint.activate([
-            leadingButton.heightAnchor.constraint(equalToConstant: theme.extensions.buttonSize.height),
-            leadingButton.widthAnchor.constraint(equalToConstant: .init(theme.extensions.buttonSize.width)),
-            leadingButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: theme.extensions.buttonToFramePadding),
-            leadingButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: buttonBottomConstraint)
+            leadingButton.widthAnchor.constraint(equalToConstant: .init(theme.extensions.leadingButtonWidth)),
+            leadingButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+            leadingButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+            leadingButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0)
         ])
         
         
@@ -94,6 +95,9 @@ class CustomInputView: UIView {
         
         containerView.backgroundColor = UIColor(theme.colors.inputLightContextBackground)
         containerView.layer.cornerRadius = theme.extensions.inputViewDefaultHeight / 2
+        containerView.layer.borderWidth = theme.extensions.inputViewBorderWidth
+        containerView.layer.borderColor = UIColor(theme.extensions.inputViewBorderColor).cgColor
+        containerView.clipsToBounds = true
     }
 }
 
