@@ -49,6 +49,7 @@ class CustomInputView: UIView {
         leadingButton = UIButton(frame: .zero)
         leadingButton.translatesAutoresizingMaskIntoConstraints = false
         leadingButton.backgroundColor = UIColor(theme.extensions.leadingButtonBackgroundColor)
+        leadingButton.imageEdgeInsets = .init(top: 0, left: 1, bottom: 0, right: 0)
         containerView.addSubview(leadingButton)
         
         let buttonBottomConstraint = -(floor((theme.extensions.inputViewDefaultHeight / 2) - (theme.extensions.buttonSize.height / 2)))
@@ -91,6 +92,7 @@ class CustomInputView: UIView {
         let leadingImage: UIImage? = theme.extensions.leadingButtonImage.render(scale: UIScreen.main.scale)
         
         leadingButton.setImage(leadingImage, for: .normal)
+        
         sendButton.setImage(sendImage, for: .normal)
         if let disabled = theme.extensions.sendButtonDisabedImage {
             let sendDisabledImage: UIImage? = disabled.render(scale: UIScreen.main.scale)

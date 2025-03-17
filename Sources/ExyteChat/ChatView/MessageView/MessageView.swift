@@ -31,8 +31,12 @@ struct MessageView: View {
     @State var reactionScale: CGFloat = 0.0
 
     static let widthWithMedia: CGFloat = 204
-    static let horizontalNoAvatarPadding: CGFloat = 8
-    static let horizontalAvatarPadding: CGFloat = 8
+    
+    //mleavy: this fucking padding is some magic number bullshit;
+    // I hate this POS library
+    static let horizontalNoAvatarPadding: CGFloat = -4
+    static let horizontalAvatarPadding: CGFloat = 10
+    
     static let horizontalTextPadding: CGFloat = 12
     static let horizontalAttachmentPadding: CGFloat = 1 // for multiple attachments
     static let statusViewSize: CGFloat = 14

@@ -171,11 +171,11 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
             }
 
             ZStack {
-                theme.colors.friendMessage
-                    .background(.ultraThinMaterial)
-                    .environment(\.colorScheme, .light)
-                    .opacity(0.5)
-                    .cornerRadius(10)
+//                theme.colors.friendMessage
+//                    .background(.ultraThinMaterial)
+//                    .environment(\.colorScheme, .light)
+//                    .opacity(0.5)
+//                    .cornerRadius(10)
                     
                 HStack(spacing: 8) {
                     ForEach(reactions, id: \.self) { reaction in
@@ -208,13 +208,15 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
                 .padding(.vertical, 4)
                 .padding(.horizontal, 12)
                 .background(theme.extensions.reactionsBackgroundColor)
+                .cornerRadius(56/2)
+                .shadow(color: .black.opacity(0.1), radius: 7, x: 0, y: 0)
                 .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(theme.extensions.reactionsBorderColor, lineWidth: lineWidth))
+                        RoundedRectangle(cornerRadius: 56/2)
+                            .stroke(theme.extensions.reactionsBorderColor, lineWidth: 1))
                             //.opacity(opacity)
             }
             .frame(width: CGFloat((reactions.count * 32) + (reactions.count * 8)) + 32 + 8,
-                   height: 34)
+                   height: 56)
             .fixedSize()
             .onTapGesture {
                 onAction(action)
