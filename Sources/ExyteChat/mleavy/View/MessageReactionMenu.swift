@@ -171,12 +171,40 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
             }
 
             ZStack {
-//                theme.colors.friendMessage
-//                    .background(.ultraThinMaterial)
-//                    .environment(\.colorScheme, .light)
-//                    .opacity(0.5)
-//                    .cornerRadius(10)
                     
+                // Note: we have 2 of these HStacks so that we can apply corner radius
+                // and drop shadow to the background without clipping
+                // the animation that occurs when a reaction is selected
+                HStack(spacing: 8) {
+                    ForEach(reactions, id: \.self) { reaction in
+                        
+                        ReactionButon(reaction: reaction, existingReaction: existingReaction, onTap: {
+                            //
+                        })
+                        .opacity(0)
+                    }
+                    
+                    Button {
+                        //
+                    } label: {
+                        action.icon()
+                    }
+                    .frame(width: 32, height: 32)
+                    .scaleEffect(scale)
+                    .animation(.easeIn, value: scale)
+                    .opacity(0)
+                    
+                    
+                }
+                .padding(.vertical, 4)
+                .padding(.horizontal, 12)
+                .background(theme.extensions.reactionsBackgroundColor)
+                .cornerRadius(56/2)
+                .shadow(color: .black.opacity(0.1), radius: 7, x: 0, y: 0)
+                .overlay(
+                        RoundedRectangle(cornerRadius: 56/2)
+                            .stroke(theme.extensions.reactionsBorderColor, lineWidth: 1))
+                
                 HStack(spacing: 8) {
                     ForEach(reactions, id: \.self) { reaction in
                         
@@ -207,13 +235,7 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
                 }
                 .padding(.vertical, 4)
                 .padding(.horizontal, 12)
-                .background(theme.extensions.reactionsBackgroundColor)
-                .cornerRadius(56/2)
-                .shadow(color: .black.opacity(0.1), radius: 7, x: 0, y: 0)
-                .overlay(
-                        RoundedRectangle(cornerRadius: 56/2)
-                            .stroke(theme.extensions.reactionsBorderColor, lineWidth: 1))
-                            //.opacity(opacity)
+                .background(.clear)
             }
             .frame(width: CGFloat((reactions.count * 32) + (reactions.count * 8)) + 32 + 8,
                    height: 56)

@@ -422,7 +422,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                         hideMessageMenu()
                     }
             }
-            .frame(height: menuButtonsSize.height + (cellFrames[row.id]?.height ?? 0), alignment: .top)
+            .frame(height: menuButtonsSize.height /*+ (cellFrames[row.id]?.height ?? 0)*/, alignment: .top) //mleavy: removed that height addition
             .opacity(menuCellOpacity)
     }
 
