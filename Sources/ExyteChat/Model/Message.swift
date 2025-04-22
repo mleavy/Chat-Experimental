@@ -88,8 +88,13 @@ public class Message: Identifiable, ObservableObject {
         self.id = responseMessage.id
         self.isReactable = responseMessage.isReactable
         
-        self.text = responseMessage.text
-        NotificationCenter.default.post(name: .onReloadData, object: nil)
+        withAnimation {
+            self.text = responseMessage.text
+        }
+        
+        // Not sure why this was ever needed - it makes the appearance of the response message
+        // text sudden and jarring
+        //NotificationCenter.default.post(name: .onReloadData, object: nil)
     }
 
     public init(id: String,
