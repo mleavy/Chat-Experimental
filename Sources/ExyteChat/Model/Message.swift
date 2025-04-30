@@ -46,6 +46,7 @@ public class Message: Identifiable, ObservableObject {
     }
 
     public var id: String
+    public var subId: Int
     public var user: User
     public var status: Status?
     public var createdAt: Date
@@ -98,6 +99,7 @@ public class Message: Identifiable, ObservableObject {
     }
 
     public init(id: String,
+                subId: Int = 0,
                 user: User,
                 status: Status? = nil,
                 createdAt: Date = Date(),
@@ -123,6 +125,7 @@ public class Message: Identifiable, ObservableObject {
         self.replyMessage = replyMessage
         self.isTyping = isTyping
         self.isAnimated = isAnimated
+        self.subId = subId
     }
 
     public static func makeMessage(

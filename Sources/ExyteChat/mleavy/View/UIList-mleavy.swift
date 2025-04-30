@@ -739,10 +739,13 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                         }
                     }
                     else {
-                        cell.layer.opacity = 0
-                        cell.transform = .init(scaleX: 0, y: 0).concatenating(.init(translationX: -cell.frame.width, y: 0))
                         
-                        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut) {
+                        cell.layer.opacity = 0
+                        if row.message.isTyping {
+                            cell.transform = .init(scaleX: 0, y: 0).concatenating(.init(translationX: -cell.frame.width, y: 0))
+                        }
+                        
+                        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {
                             cell.layer.opacity = 1
                             cell.transform = .identity
                         }
