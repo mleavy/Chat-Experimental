@@ -712,8 +712,9 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             guard let paginationHandler = self.paginationHandler, let paginationTargetIndexPath, indexPath == paginationTargetIndexPath else {
                 
                 let row = sections[indexPath.section].rows[indexPath.row]
-                if row.message.isAnimated {
-                    row.message.isAnimated = false
+                if row.message.animation != .none {
+                    let animation = row.message.animation
+                    row.message.animation = .none
                     
                     guard isScrolledNearBottom else { return }
                     
@@ -749,6 +750,11 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                             cell.layer.opacity = 1
                             cell.transform = .identity
                         }
+                        
+                        if animation == .pulse {
+                            pulse(cell)
+                        }
+                        
                     }
                 }
                 
@@ -766,6 +772,18 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             isScrolledToBottom = scrollView.contentOffset.y <= 0
             isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 1
             isScrolledNearBottom = scrollView.contentOffset.y <= 50
+        }
+        
+        func pulse(_ view: UIView) {
+            let pulse = CABasicAnimation(keyPath: "transform.scale")
+            pulse.fromValue = 1.0
+            pulse.toValue = 1.1
+            pulse.duration = 0.3
+            pulse.autoreverses = true
+            pulse.repeatCount = 1
+            pulse.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+
+            view.layer.add(pulse, forKey: "pulse")
         }
     }
 

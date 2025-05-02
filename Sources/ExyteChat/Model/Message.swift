@@ -44,6 +44,12 @@ public class Message: Identifiable, ObservableObject {
             }
         }
     }
+    
+    public enum Animation {
+        case none
+        case `default`
+        case pulse
+    }
 
     public var id: String
     public var subId: Int
@@ -53,7 +59,7 @@ public class Message: Identifiable, ObservableObject {
     //mleavy: conditionally use messageBuilder
     public var usesMessageBuilder: Bool
     //mleavy: message appearance requires animation
-    public var isAnimated: Bool
+    public var animation: Animation
 
     public var text: String
     public var attachments: [Attachment]
@@ -110,7 +116,7 @@ public class Message: Identifiable, ObservableObject {
                 recording: Recording? = nil,
                 replyMessage: ReplyMessage? = nil,
                 isTyping: Bool = false,
-                isAnimated: Bool = false,
+                animation: Animation = .none,
                 isReactionAnimated: Bool = false) {
 
         self.id = id
@@ -124,7 +130,7 @@ public class Message: Identifiable, ObservableObject {
         self.recording = recording
         self.replyMessage = replyMessage
         self.isTyping = isTyping
-        self.isAnimated = isAnimated
+        self.animation = animation
         self.subId = subId
     }
 
