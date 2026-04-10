@@ -31,7 +31,7 @@ let package = Package(
             from: "1.0.0"
         ),
         .package(
-            url: "https://github.com/EmergeTools/Pow",
+            url: "https://github.com/mleavy/Pow",
             from: "1.0.0"
         ),
     ],
